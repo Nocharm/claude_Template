@@ -1,21 +1,19 @@
 # CLAUDE.md
 
-허브 파일. 프로젝트 설명과 명령어는 이 파일에 직접 적고, 일반 규칙은 `rules/` 하위 파일을 `@import` 로 불러온다.
+기존 프로젝트에 임베딩하기 위한 소규모 독립 기능 모듈 템플릿.
+호스트 앱의 의존성 체계를 따르며, 단일 책임 원칙으로 범위를 좁게 유지한다.
 
 ---
 
 ## Project
 
-<한 줄 프로젝트 설명 — 이 저장소가 무엇이고 누가 쓰는지>
+<한 줄 설명 — 이 모듈이 무엇을 하고 어느 호스트 앱에 삽입되는지>
 
 ---
 
 ## Commands
 
 ```bash
-# Build
-<your build command here>
-
 # Test
 <your test command here>              # full suite
 <your single test command here>       # single test
@@ -23,9 +21,6 @@
 # Lint / Format
 <your lint command here>
 <your format command here>
-
-# Dev server
-<your dev server command here>
 ```
 
 ---
@@ -34,12 +29,10 @@
 
 @rules/comments.md
 @rules/config.md
-@rules/docker.md
 @rules/testing.md
 @rules/git.md
 @rules/security.md
 @rules/dependencies.md
-@rules/sync-checklist.md
 @rules/error-handling.md
 
 ---
@@ -50,13 +43,3 @@
 
 @rules/languages/python.md
 @rules/languages/typescript.md
-
----
-
-## Frontend Rules (프론트엔드 프로젝트만)
-
-프론트엔드 프로젝트가 아니면 이 섹션을 통째로 삭제한다.
-CSS 사용 시 `templates/` 의 디자인 토큰 템플릿을 먼저 채우고 시작한다 (`rules/styling/css.md` 참조).
-
-@rules/languages/nextjs.md
-@rules/styling/css.md
