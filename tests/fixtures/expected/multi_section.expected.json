@@ -1,0 +1,43 @@
+{
+  "_schema_note": "섹션 경계, 페이지 방향, 머리글/꼬리글 분리 검증.",
+  "summary": {
+    "sections": 3,
+    "paragraphs_total": "8 (대략 — section break paragraph 포함)",
+    "images": 0,
+    "tables": 0
+  },
+  "sections": [
+    {
+      "order": 0,
+      "page_orientation": "portrait",
+      "header_default_text_contains": "섹션 1 일반 헤더",
+      "header_first_page_text_contains": "섹션 1 첫 페이지 헤더",
+      "footer_default_text_contains": "섹션 1 푸터",
+      "_note": "첫 페이지 헤더가 별도로 지정된 유일한 섹션"
+    },
+    {
+      "order": 1,
+      "page_orientation": "landscape",
+      "header_default_text_contains": "섹션 2 헤더",
+      "header_first_page": null,
+      "footer_default_text_contains": "섹션 2 푸터",
+      "_note": "가로 방향 — page_size width > height 이어야 함"
+    },
+    {
+      "order": 2,
+      "page_orientation": "portrait",
+      "header_default_text_contains": "섹션 3 헤더",
+      "header_first_page": null,
+      "footer_default_text_contains": "섹션 3 푸터",
+      "_note": "portrait 복귀"
+    }
+  ],
+  "_critical_assertions": [
+    "sections[0].page_orientation == 'portrait'",
+    "sections[1].page_orientation == 'landscape'",
+    "sections[2].page_orientation == 'portrait'",
+    "sections[0].header.first_page is not null",
+    "sections[1].header.first_page is null",
+    "각 섹션의 header.default가 서로 다른 텍스트를 가진다"
+  ]
+}

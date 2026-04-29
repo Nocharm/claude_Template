@@ -1,0 +1,28 @@
+{
+  "_schema_note": "자동/수동 번호가 동일 위계에 혼재한 케이스. 후속 정규화 로직의 입력으로 쓰임.",
+  "summary": {
+    "paragraphs": 10,
+    "images": 0,
+    "tables": 0,
+    "sections": 1,
+    "cross_references": 0,
+    "bookmarks": 0
+  },
+  "paragraphs": [
+    {"index": 0, "style_name": "Heading 1", "numbering": null},
+    {"index": 1, "numbering": {"is_auto": true, "ilvl": 0, "format": "decimal"}, "_note": "자동 1."},
+    {"index": 2, "numbering": {"is_auto": true, "ilvl": 0, "format": "decimal"}, "_note": "자동 2."},
+    {"index": 3, "numbering": {"is_auto": false, "raw_token_contains": "3."}, "_note": "수동 데시멀 — 자동과 동일 위계로 보이나 numId 없음"},
+    {"index": 4, "numbering": {"is_auto": false, "raw_token_contains": "①"}},
+    {"index": 5, "numbering": {"is_auto": false, "raw_token_contains": "②"}},
+    {"index": 6, "numbering": {"is_auto": false, "raw_token_contains": "가."}},
+    {"index": 7, "numbering": {"is_auto": false, "raw_token_contains": "(1)"}},
+    {"index": 8, "numbering": {"is_auto": false, "raw_token_contains": "-"}, "_note": "대시 글머리"},
+    {"index": 9, "numbering": {"is_auto": true, "ilvl": 0, "format": "decimal"}, "_note": "자동 — 같은 numId면 카운터 이어감"}
+  ],
+  "images": [],
+  "tables": [],
+  "sections": [
+    {"page_orientation": "portrait"}
+  ]
+}

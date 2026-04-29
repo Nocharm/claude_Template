@@ -1,0 +1,43 @@
+{
+  "_schema_note": "파서 출력 중 검증 대상 필드만 포함. 미명시 필드는 스펙상 자유.",
+  "summary": {
+    "paragraphs": 9,
+    "images": 1,
+    "tables": 1,
+    "sections": 1,
+    "cross_references": 0,
+    "bookmarks": 0
+  },
+  "paragraphs": [
+    {"index": 0, "style_name": "Heading 1", "numbering": null},
+    {"index": 1, "numbering": null},
+    {"index": 2, "numbering": {"is_auto": true, "ilvl": 0, "format": "decimal"}},
+    {"index": 3, "numbering": {"is_auto": true, "ilvl": 1, "format": "decimal"}},
+    {"index": 4, "numbering": {"is_auto": true, "ilvl": 2, "format": "lowerLetter"}},
+    {"index": 5, "numbering": {"is_auto": true, "ilvl": 0, "format": "decimal"}},
+    {"index": 6, "numbering": null, "_note": "그림이 임베드된 단락 (텍스트 없음)"},
+    {"index": 7, "style_name": "Caption", "numbering": null, "_note": "그림 1 캡션"},
+    {"index": 8, "style_name": "Caption", "numbering": null, "_note": "표 1 캡션"}
+  ],
+  "images": [
+    {
+      "anchor_paragraph_index": 6,
+      "kind": "inline",
+      "format": "png",
+      "caption": {"seq_name": "그림", "seq_number": 1, "text_contains": "System overview"}
+    }
+  ],
+  "tables": [
+    {
+      "anchor_paragraph_index": 7,
+      "rows": 2,
+      "cols": 2,
+      "caption": {"seq_name": "표", "seq_number": 1, "text_contains": "Equipment checklist"}
+    }
+  ],
+  "sections": [
+    {"page_orientation": "portrait", "header_default_present": true, "footer_default_present": true}
+  ],
+  "cross_references": [],
+  "bookmarks": []
+}

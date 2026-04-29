@@ -1,0 +1,38 @@
+{
+  "_schema_note": "REF 필드 + 북마크 추출 검증. 후속 참조 재연결 로직의 입력.",
+  "summary": {
+    "paragraphs": 6,
+    "images": 1,
+    "tables": 1,
+    "sections": 1,
+    "cross_references": 3,
+    "bookmarks": 3
+  },
+  "bookmarks": [
+    {"id": "1", "name": "_Ref_core_section", "paragraph_index": 1},
+    {"id": "2", "name": "_Ref_fig_1", "paragraph_index": 3},
+    {"id": "3", "name": "_Ref_tbl_1", "paragraph_index": 4}
+  ],
+  "cross_references": [
+    {
+      "target_bookmark": "_Ref_core_section",
+      "display_text": "핵심 절차",
+      "paragraph_index": 5,
+      "_note": "북마크 1번을 가리킴 → bookmarks 테이블로 paragraph_index=1로 재연결 가능"
+    },
+    {
+      "target_bookmark": "_Ref_fig_1",
+      "display_text": "그림 1",
+      "paragraph_index": 5,
+      "_note": "그림 캡션 단락(index=3)을 가리킴"
+    },
+    {
+      "target_bookmark": "_Ref_tbl_1",
+      "display_text": "표 1",
+      "paragraph_index": 5,
+      "_note": "표 캡션 단락(index=4)을 가리킴"
+    }
+  ],
+  "images": [{"caption": {"seq_name": "그림", "seq_number": 1, "text_contains": "핵심 도식"}}],
+  "tables": [{"caption": {"seq_name": "표", "seq_number": 1, "text_contains": "데이터 요약"}}]
+}

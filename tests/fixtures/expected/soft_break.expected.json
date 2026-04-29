@@ -1,0 +1,32 @@
+{
+  "_schema_note": "soft return 위치 정보 보존 검증. 후속에서 paragraph 승격 가능성을 열어둠.",
+  "summary": {
+    "paragraphs": 5,
+    "images": 0,
+    "tables": 0,
+    "sections": 1
+  },
+  "paragraphs": [
+    {"index": 0, "style_name": "Heading 1", "soft_breaks_count": 0},
+    {
+      "index": 1,
+      "soft_breaks_count": 1,
+      "_note": "soft break 1개 — runs를 break 위치에서 자르면 두 줄로 분리 가능",
+      "split_text_expected": ["첫 번째 줄 (soft break 위)", "두 번째 줄 (soft break 아래)"]
+    },
+    {"index": 2, "soft_breaks_count": 0, "_note": "hard return — 별도 paragraph로 이미 분리"},
+    {"index": 3, "soft_breaks_count": 0},
+    {
+      "index": 4,
+      "soft_breaks_count": 3,
+      "_note": "4 segments × 3 breaks. 위치 정보로 후속에서 4개 paragraph로 승격 가능",
+      "split_text_expected": [
+        "Step 1: Initialize the system",
+        "Step 2: Validate inputs",
+        "Step 3: Execute operation",
+        "Step 4: Cleanup resources"
+      ]
+    }
+  ],
+  "sections": [{"page_orientation": "portrait"}]
+}
