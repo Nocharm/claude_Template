@@ -46,6 +46,7 @@ def get_auto_numbering(p_elem, numbering_part) -> dict | None:
         "ilvl": ilvl,
         "format": fmt,
         "is_auto": True,
+        "raw_token": None,
     }
 
 

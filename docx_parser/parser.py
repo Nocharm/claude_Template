@@ -52,7 +52,8 @@ def parse_docx(path: str | Path, *, include_raw_xml: bool = False) -> dict:
             bookmarks.extend(extract_bookmarks(child, para_idx))
             para_idx += 1
         elif child.tag == qn("w:tbl"):
-            anchor_para_idx = para_idx - 1  # 표 직전 단락 인덱스 (음수면 문서 시작)
+            # 표 직전 단락 인덱스. 표가 문서 첫 요소면 None.
+            anchor_para_idx = para_idx - 1 if para_idx > 0 else None
             tbl = extract_table(
                 child,
                 table_index=len(tables),

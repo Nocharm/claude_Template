@@ -99,23 +99,40 @@ def is_caption_paragraph(paragraph: dict) -> tuple[bool, dict | None]:
 
 
 def attach_captions(images: list[dict], tables: list[dict], paragraphs: list[dict]) -> None:
-    """그림/표의 직전 또는 직후 단락이 캡션이면 연결. 누락 시 caption=None 유지."""
-    paragraph_by_index = {p["index"]: p for p in paragraphs}
+    """그림/표의 직전 또는 직후 단락이 캡션이면 연결. 누락 시 caption=None 유지.
 
-    def find_caption(anchor_idx: int) -> dict | None:
-        for offset in (1, -1, 2, -2):  # 직후 → 직전 → 한 칸 더
-            cand = paragraph_by_index.get(anchor_idx + offset)
+    매칭 정책:
+    - anchor ±1 단락만 후보 (워드 관행상 캡션은 인접)
+    - 한 번 매칭된 캡션 paragraph_index는 다른 그림/표가 재사용 불가
+    """
+    paragraph_by_index = {p["index"]: p for p in paragraphs}
+    consumed: set[int] = set()
+
+    def find_caption(anchor_idx: int | None) -> tuple[dict | None, int | None]:
+        if anchor_idx is None:
+            return None, None
+        for offset in (1, -1):  # 직후 우선, 그 다음 직전
+            cand_idx = anchor_idx + offset
+            if cand_idx in consumed:
+                continue
+            cand = paragraph_by_index.get(cand_idx)
             if cand is None:
                 continue
             ok, cap = is_caption_paragraph(cand)
             if ok:
-                return cap
-        return None
+                return cap, cand_idx
+        return None, None
 
     for img in images:
         if img.get("caption") is None:
-            img["caption"] = find_caption(img["anchor_paragraph_index"])
+            cap, idx = find_caption(img["anchor_paragraph_index"])
+            img["caption"] = cap
+            if idx is not None:
+                consumed.add(idx)
 
     for tbl in tables:
         if tbl.get("caption") is None:
-            tbl["caption"] = find_caption(tbl["anchor_paragraph_index"])
+            cap, idx = find_caption(tbl["anchor_paragraph_index"])
+            tbl["caption"] = cap
+            if idx is not None:
+                consumed.add(idx)

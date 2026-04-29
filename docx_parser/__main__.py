@@ -22,8 +22,16 @@ def main(argv: list[str] | None = None) -> int:
     if not args.input.exists():
         print(f"파일이 없습니다: {args.input}", file=sys.stderr)
         return 2
+    if args.input.suffix.lower() != ".docx":
+        print(f"확장자가 .docx가 아닙니다: {args.input}", file=sys.stderr)
+        return 2
 
-    result = parse_docx(args.input, include_raw_xml=args.raw_xml)
+    try:
+        result = parse_docx(args.input, include_raw_xml=args.raw_xml)
+    except Exception as e:  # noqa: BLE001 — 사용자 친화 메시지로 변환
+        print(f"파싱 실패: {type(e).__name__}: {e}", file=sys.stderr)
+        return 1
+
     indent = 2 if args.pretty else None
     text = json.dumps(result, ensure_ascii=False, indent=indent)
 

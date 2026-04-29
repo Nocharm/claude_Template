@@ -92,8 +92,11 @@ def _get_alignment(pPr) -> str | None:
 def _extract_runs_and_breaks(p_elem) -> tuple[list[dict], list[int]]:
     """단락 내 run을 순회하며 텍스트/서식 수집 + soft break 위치 기록.
 
-    soft break는 `<w:br>` (type 미지정 또는 textWrapping). page/column break는 제외.
-    위치는 'run 인덱스' 기준 — 해당 run *뒤에* soft break가 삽입되었음을 의미.
+    `<w:br>` (type 미지정 또는 textWrapping) 만 soft return으로 처리.
+    soft_breaks[i] = j 의미: runs[j]와 runs[j+1] 사이에 break 위치.
+    빈 placeholder run을 만들지 않음 — 누적 텍스트가 비어 있고 직전에 push된
+    run이 이미 있으면 그 run의 인덱스를 break 위치로 기록.
+    문단 시작에 break가 오면 j = -1.
     """
     runs: list[dict] = []
     soft_breaks: list[int] = []
@@ -101,10 +104,8 @@ def _extract_runs_and_breaks(p_elem) -> tuple[list[dict], list[int]]:
     for child in p_elem.iter():
         if child.tag != qn("w:r"):
             continue
-        # nested w:r (e.g., 필드 내부)도 동일하게 처리
         rPr = child.find(qn("w:rPr"))
         run_text_parts: list[str] = []
-        produced_run = False
 
         for sub in child:
             tag = sub.tag
@@ -113,21 +114,19 @@ def _extract_runs_and_breaks(p_elem) -> tuple[list[dict], list[int]]:
             elif tag == qn("w:tab"):
                 run_text_parts.append("\t")
             elif tag == qn("w:br"):
-                # soft return 만 (page/column 제외)
                 br_type = sub.get(qn("w:type"))
                 if br_type in (None, "textWrapping"):
-                    # 현재까지 누적된 텍스트로 run 1개 push 후 soft break 마킹
-                    if run_text_parts or not produced_run:
+                    # 누적 텍스트가 있으면 run 으로 push
+                    if run_text_parts:
                         runs.append(_make_run("".join(run_text_parts), rPr))
-                        produced_run = True
                         run_text_parts = []
+                    # break 위치는 직전 run 인덱스 (없으면 -1)
                     soft_breaks.append(len(runs) - 1)
-                # page/column break 는 무시 (필요 시 후속 보완)
+                # page/column break는 무시
 
-        if run_text_parts or not produced_run:
-            text = "".join(run_text_parts)
-            if text or rPr is not None:
-                runs.append(_make_run(text, rPr))
+        # 잔여 텍스트 push
+        if run_text_parts:
+            runs.append(_make_run("".join(run_text_parts), rPr))
 
     return runs, soft_breaks
 

@@ -23,7 +23,6 @@ def extract_refs_in_paragraph(p_elem, paragraph_index: int) -> list[dict]:
             continue
         display = "".join(t.text or "" for t in fld.iter(qn("w:t")))
         refs.append({
-            "ref_id": None,
             "target_bookmark": m.group(1),
             "display_text": display,
             "paragraph_index": paragraph_index,

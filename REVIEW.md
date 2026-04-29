@@ -1,8 +1,9 @@
 # Parser Implementation Review
 
-**검토 대상**: `docx_parser/` (commit `c81d00d`)
+**검토 대상**: `docx_parser/` (initial: `c81d00d`)
 **검증 기반**: `tests/fixtures/inputs/*.docx` 6건 vs `tests/fixtures/expected/*.expected.json`
 **검토일**: 2026-04-29
+**상태**: 모든 권고 사항 적용 완료 (사용자 승인 후 패치)
 
 ---
 
@@ -182,20 +183,19 @@ P0 수정 시 거리 정책을 함께 결정·문서화 필요.
 
 ---
 
-## 사용자 결정 필요 사항
+## 적용된 패치 (사용자 승인 후)
 
-이 검토는 **수정 권고**이며, 자체 판단으로 코드 변경하지 않았습니다.
-
-**다음 결정을 요청합니다**:
-
-| 항목 | 옵션 | 권고 |
+| 항목 | 결정 | 적용 |
 |---|---|---|
-| P0 캡션 매칭 정책 | (A) 소비 추적 / (B) 거리 ±1 / (C) 사이 image/table 막기 | (A)+(B) |
-| P1 자동 numbering raw_token | null 추가 / 그대로 둠 | null 추가 |
-| P2 soft break 빈 run | 제거 / 유지 | 제거 |
-| P2 표 anchor 음수 | null로 / -1 유지 | null |
-| P3 ref_id 필드 | 제거 / 의미 재정의 | 제거 |
-| P3 예외 처리 강화 | 진행 / 보류 | 진행 (CLI 한정) |
-| P3 단위 명시 | 출력 키 자체 변경 / docs로만 | docs로 |
+| P0 캡션 매칭 정책 | (A)+(B) 채택 — 소비 추적 + 거리 ±1 | `docx_parser/images.py:attach_captions()` |
+| P1 자동 numbering raw_token | null 추가 | `docx_parser/numbering.py:get_auto_numbering()` |
+| P2 soft break 빈 run | 제거 | `docx_parser/paragraphs.py:_extract_runs_and_breaks()` |
+| P2 표 anchor 음수 | null 채택 | `docx_parser/parser.py` |
+| P3 ref_id 필드 | 제거 | `docx_parser/refs.py` |
+| P3 CLI 예외 처리 | try/except + 친화 메시지 | `docx_parser/__main__.py` |
+| P3 단위 명시 | docs(`for-developers.md`)에서 설명 | (Task 2에서 처리) |
 
-결정 주시면 패치 적용합니다.
+## 검증
+
+`tests/test_fixtures.py` 추가 — 6개 fixture 기반 P0~P3 회귀 방지 단언 포함.
+전체 테스트: 14 passed.

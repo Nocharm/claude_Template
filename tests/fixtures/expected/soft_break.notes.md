@@ -30,8 +30,7 @@ soft return(`<w:br/>`)과 hard return의 구분이 손실 없이 보존되는지
   - 옵션 B: 모든 자식이 같은 numbering 공유 (하지만 워드 자동 번호는 paragraph마다 카운트되므로 부작용 가능)
 - soft break 인덱스는 **runs 인덱스 기준**. 빈 run 또는 placeholder run이 끼어 있을 수 있음 → 텍스트 join 시 빈 run을 무시해도 무방.
 
-## 알려진 구현 quirk
+## 의미
 
-현 파서는 `<w:br/>`를 만나면 새 빈 run을 push한 뒤 break 위치를 그 run으로 마크함.
-즉 `runs[soft_breaks[i]]` 가 **빈 텍스트 run** 일 수 있다.
-의미적으로는 "soft break 직전" 위치 마커이며, 후속에서 split할 때 무시하면 됨.
+`soft_breaks[i] = j` → "runs[j]와 runs[j+1] 사이에 break 위치".
+빈 placeholder run은 만들지 않음. j == -1이면 "단락 시작에 break".
