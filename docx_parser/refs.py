@@ -61,7 +61,6 @@ def _extract_complex_refs(p_elem, paragraph_index: int) -> list[dict]:
                     m = _REF_INSTR.search(instr)
                     if m:
                         refs.append({
-                            "ref_id": None,
                             "target_bookmark": m.group(1),
                             "display_text": "".join(display_buf),
                             "paragraph_index": paragraph_index,
