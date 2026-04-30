@@ -39,7 +39,7 @@ doc["sections"][0]["page_orientation"]  # "portrait" | "landscape"
 pytest tests/                  # 14 개
 ```
 
-6 개의 fixture(`tests/fixtures/inputs/*.docx`) 가 자동 생성되며 P0~P3 회귀를 막는다.
+6 개의 fixture(`tests/fixtures/inputs/*.docx`) 는 git 에 커밋되어 있으며 P0~P3 회귀를 막는다. 재생성은 `python tests/fixtures/generate_inputs.py`.
 
 ## 비범위
 
