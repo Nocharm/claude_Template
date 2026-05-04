@@ -103,58 +103,89 @@ Located at `.claude/commands/setup-from-template.md`. Instruction-style markdown
 | 6 | **Meta docs cleanup** | Ask whether to delete `docs/template/`. Default: delete. | Y/N |
 | 7 | **Validation** | Grep all `@import` paths in `CLAUDE.md`, verify each resolves. Print summary. | auto |
 
-### 4.5 Meta-doc writing rules
+### 4.5 README / USAGE writing rules
 
-Rules for `docs/template/README.md` and `docs/template/USAGE.md` themselves — designed to prevent the drift that motivated this redesign.
+Apply to **any** `README.md` or `USAGE.md` produced from or by this template — including the template's own meta docs in `docs/template/` and the downstream project READMEs that this template helps create. Documented here so the convention propagates.
+
+#### Audience split
+
+| File | Audience | Purpose |
+|---|---|---|
+| `README.md` | 개발자, 업무 인수인계자 | 프로젝트 개요 + 실행 방법 |
+| `USAGE.md` | 사용자 (end user) | 사용 방법 |
+
+A reader picking up either file cold should immediately know they're in the right place.
 
 #### Single source of truth
 
 Inventory of shipped files (rules, languages, templates) appears in **exactly one place**: `docs/template/USAGE.md` § "파일 구성". Nowhere else.
 
-- `docs/template/README.md` does **not** list rule files. It links to USAGE for the inventory.
-- `CLAUDE.md`'s `@import` lines are runtime imports, not documentation. They get pruned downstream — they are not authoritative.
-- A third document that needs to reference a rule file links to USAGE; it does not duplicate the list.
+- `README.md` does not list rule files. It links to USAGE for the inventory.
+- `CLAUDE.md`'s `@import` lines are runtime imports, not documentation — they get pruned downstream and are not authoritative.
+- Any third document that needs to reference a rule file links to USAGE; it never duplicates the list.
 
-#### `docs/template/README.md` (≤ 50 lines)
+#### `README.md` required content (≤ 80 lines)
 
-Front door. Korean.
-
-Required structure:
-1. One-sentence project description.
-2. **Quick Start** — three shell commands: copy → `/init` → `/setup-from-template`.
-3. Link to USAGE for the full guide.
-4. Brief "왜 hub-and-spoke 인가" rationale (≤ 4 bullets).
-
-Forbidden: file inventory, step-by-step instructions, FAQ, command reference tables.
-
-#### `docs/template/USAGE.md` (≤ 300 lines)
-
-Complete operating manual. Korean. Rule bodies referenced from USAGE stay in English (that is the language of the rules themselves).
+Developer / handoff perspective. Korean prose.
 
 Required sections, in order:
+
+1. **프로젝트 개요** — what, why, who. ≤ 4 sentences.
+2. **실행 방법** — macOS 와 Windows 를 **반드시 분리** 표기. 명령이 동일하면 동일하다고 명시 (생략 금지).
+   ```bash
+   # macOS / Linux
+   cp -r template/ ~/new-project
+   ```
+   ```powershell
+   # Windows (PowerShell)
+   Copy-Item -Recurse template ~/new-project
+   ```
+3. **(Python 프로젝트의 경우)** Install / run 명령은 uv 와 pip 를 **항상 함께** 표기. uv 가 권장, pip 는 fallback.
+   ```bash
+   # uv (preferred)
+   uv pip install -r requirements.txt
+
+   # pip (fallback)
+   pip install -r requirements.txt
+   ```
+4. **Link to USAGE** for end-user docs.
+
+Forbidden in README: 파일 인벤토리, FAQ, 사용자용 how-to, 단계별 튜토리얼.
+
+#### `USAGE.md` required content (≤ 300 lines)
+
+End-user perspective. Korean prose. Rule bodies referenced from USAGE stay in English (that is the language of the rules themselves).
+
+Required sections, in order:
+
 1. **파일 구성** — the *only* inventory in the repo.
 2. **사용 흐름** — 3 steps: copy → `/init` → `/setup-from-template`.
-3. **`/setup-from-template` 동작** — each step's behavior and prompts (mirrors §4.4 of this spec).
+3. **`/setup-from-template` 동작** — each step's behavior and prompts (mirrors §4.4).
 4. **수동 조정** — when/how to manually edit if the slash command does not fit.
 5. **새 규칙 추가하기** — process for adding a rule file and updating USAGE.
 6. **FAQ**.
+
+If USAGE shows example commands for downstream stacks (e.g. Python FastAPI), those examples follow the README rules above (OS split, uv+pip pairing).
 
 #### Update triggers
 
 | Change | Update USAGE | Update README |
 |---|---|---|
-| Add/remove rule file | ✅ (inventory) | ❌ |
-| Add/remove language | ✅ (inventory) | ❌ |
-| Change setup flow / slash command behavior | ✅ (사용 흐름 / 동작 sections) | ❌ (unless Quick Start commands change) |
-| Change template positioning or purpose | ❌ | ✅ |
-| Reorganize folders | ✅ (inventory) | ❌ |
+| Add/remove rule file | ✅ (인벤토리) | ❌ |
+| Add/remove language | ✅ (인벤토리) | ❌ |
+| Change setup flow / slash command behavior | ✅ (사용 흐름 / 동작) | ❌ |
+| Change run instructions (deps, env, OS support) | ❌ | ✅ (실행 방법) |
+| Change template positioning or purpose | ❌ | ✅ (프로젝트 개요) |
+| Reorganize folders | ✅ (인벤토리) | ❌ |
 
-#### Style rules
+#### Style
 
 - Korean prose, terse imperative.
-- Code blocks for commands, not for explanations.
+- Code blocks for commands; prose for explanation.
 - Tables for inventories and decision matrices.
-- One canonical example per concept — no duplicate examples for related stacks.
+- One canonical example per concept.
+- **Multi-OS commands**: separate, clearly labeled code blocks (`# macOS / Linux`, `# Windows (PowerShell)`). Never assume cross-platform equivalence silently.
+- **Python install/run commands**: always pair uv and pip. Showing only one is forbidden.
 
 ## 5. Acceptance Criteria
 
