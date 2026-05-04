@@ -1,0 +1,168 @@
+# Claude Code 템플릿 사용 가이드
+
+이 가이드는 `claude-code-template` 을 새 프로젝트의 출발점으로 사용하는 방법을 설명한다. 핵심 흐름은 **3 단계**다 — 복사 → `/init` → `/setup-from-template`.
+
+---
+
+## 파일 구성
+
+```
+CLAUDE.md                       # 허브 seed (## Rules / Language-Specific / Frontend 만)
+README.md                       # 프로젝트 placeholder (한 줄)
+.claude/
+  commands/
+    setup-from-template.md      # 셋업 자동화 슬래시 커맨드
+docs/
+  template/
+    README.md                   # 이 템플릿의 README (다운스트림에서는 보통 삭제)
+    USAGE.md                    # 이 가이드 (다운스트림에서는 보통 삭제)
+rules/
+  comments.md
+  config.md
+  docker.md
+  testing.md
+  git.md
+  security.md
+  dependencies.md
+  sync-checklist.md
+  error-handling.md
+  documentation.md              # README/USAGE 작성 규칙
+  languages/
+    python.md
+    typescript.md
+    nextjs.md
+  styling/
+    css.md
+templates/
+  design-tokens.css             # vanilla CSS / CSS Modules 디자인 토큰
+  tailwind.theme.ts             # Tailwind 디자인 토큰 (같은 스키마)
+  design_concept/               # 디자인 컨셉 레퍼런스 (5개)
+```
+
+**관계:**
+- `CLAUDE.md` 는 허브 seed. `## Rules` 블록의 `@rules/<file>.md` import 만 담는다.
+- `/init` 이 Project / Commands 같은 프로젝트 메타 섹션을 자동 생성.
+- `/setup-from-template` 이 사용 안 하는 언어 import, 디자인 토큰 배치, 메타 문서 정리를 자동화.
+- `templates/` 는 `@import` 대상이 아니다 — 슬래시 커맨드 또는 사용자가 실제 파일로 복사하는 **파일 템플릿**.
+
+---
+
+## Step 1. 폴더 복사
+
+새 프로젝트 위치로 통째로 복사한다.
+
+```bash
+# 옵션 A — 파일 복사
+cp -r /path/to/claude-code-template ~/new-project
+cd ~/new-project
+rm -rf .git && git init                  # 템플릿 이력 제거 후 새 git 시작
+
+# 옵션 B — 템플릿 레포 clone 후 git 초기화
+git clone <template-repo-url> ~/new-project
+cd ~/new-project
+rm -rf .git && git init
+```
+
+> **중요:** 허브 파일은 반드시 `CLAUDE.md` 라는 이름이어야 한다. Claude Code 는 프로젝트 루트의 `CLAUDE.md` 를 자동으로 읽는다.
+
+---
+
+## Step 2. `/init` 실행
+
+Claude Code 안에서:
+
+```
+/init
+```
+
+`/init` 은 폴더 내용을 분석해 다음을 생성/보강한다:
+- "What this repository is" / "Project" 같은 프로젝트 설명
+- "Commands" — build / test / lint / dev 명령어 (실제 의존성 파일에서 추론)
+- "Architecture" / 주요 디렉터리 설명
+
+기존의 `## Rules` / `## Language-Specific Rules` / `## Frontend Rules` 블록은 그대로 보존된다 (또는 다음 Step 의 슬래시 커맨드가 복원).
+
+---
+
+## Step 3. `/setup-from-template` 실행
+
+Claude Code 안에서:
+
+```
+/setup-from-template
+```
+
+다음을 자동 수행한다:
+1. 스택 감지 (`package.json`, `pyproject.toml`, `next.config.*`, `tailwind.config.*` 등)
+2. `## Language-Specific Rules` / `## Frontend Rules` 의 사용 안 하는 `@import` 라인 제거
+3. 디자인 토큰 템플릿을 적절한 경로로 복사 (Tailwind / vanilla CSS / 둘 다 / 안 씀 중 선택)
+4. `templates/design_concept/` 유지/삭제 확인
+5. 메타 문서 (`docs/template/`) 삭제 확인 — 이 프로젝트는 더 이상 템플릿이 아니므로 보통 삭제
+6. 루트 `README.md` 가 placeholder 상태면 안내 (사용자 또는 `/init` 결과로 교체할 것)
+7. 모든 `@import` 경로가 실제 파일을 가리키는지 검증 후 결과 요약
+
+비가역 작업 (파일 삭제·이동) 전에는 매번 사용자 확인을 받는다.
+
+---
+
+## Step 4 (선택). 프로젝트 특화 규칙 추가
+
+범용 규칙 외에 프로젝트에만 해당하는 규칙이 있다면:
+
+**방법 A — `CLAUDE.md` 에 직접 추가:**
+
+`## Rules` 위쪽에 프로젝트 전용 섹션을 둔다.
+
+````markdown
+## Project Structure
+
+```
+src/
+├── api/          # API 라우터. 비즈니스 로직 금지.
+├── services/     # 비즈니스 로직.
+├── models/       # DB 모델.
+└── utils/        # 공용 유틸.
+```
+
+## Gotchas
+- Redis 연결은 connection pool 필수
+- 파일 업로드 50MB 제한 (nginx + 앱 양쪽 설정)
+````
+
+**방법 B — `rules/` 에 새 파일 생성:**
+
+규칙이 길거나 여러 개라면 `rules/<topic>.md` 를 만들고 `CLAUDE.md` 의 `## Rules` 목록에 `@rules/<topic>.md` 를 추가.
+
+프로젝트별로 계속 커지는 규칙은 B 가 낫다 — 허브가 얇게 유지된다.
+
+---
+
+## 전체 체크리스트
+
+- [ ] 1. 폴더 복사 + `rm -rf .git && git init`
+- [ ] 2. `/init` 실행
+- [ ] 3. `/setup-from-template` 실행
+- [ ] 4. (선택) 프로젝트 특화 규칙 추가
+- [ ] 5. 첫 의미있는 커밋 전에 루트 `README.md` 를 실제 내용으로 교체
+
+---
+
+## FAQ
+
+**Q: `/init` 만 쓰고 이 템플릿 안 쓰면 안 되나?**
+A: 가능하다. 다만 `rules/` 의 일반 규칙들과 `templates/` 의 디자인 토큰을 못 쓴다. 이 템플릿의 가치는 `## Rules` 블록과 `templates/` 자산.
+
+**Q: `/setup-from-template` 을 다시 실행해도 되나?**
+A: 안전. 휴리스틱으로 이미 셋업된 폴더인지 감지해 사용자에게 진행 여부를 묻는다.
+
+**Q: 규칙이 너무 많으면 Claude 가 무시하나?**
+A: Anthropic 권장은 파일당 200줄 이하, 전체 규칙 150개 이하. 넘으면 준수율이 균일하게 하락한다. 허브 구조 덕분에 분리되어 있지만 총량 관리는 필요.
+
+**Q: 팀원이 다른 AI 도구(Cursor, Copilot)를 쓰면?**
+A: `CLAUDE.md` 는 Claude Code 전용이다. Cursor 는 `.cursorrules`, Copilot 은 `.github/copilot-instructions.md` 를 쓴다. 내용은 동일하게, 파일명·형식만 맞추면 된다.
+
+**Q: `CLAUDE.md` 와 `.claude/settings.json` 의 차이는?**
+A: `CLAUDE.md` = "이렇게 해줘" (권장 사항). `settings.json` = "이것만 허용" (권한 강제). 예: "pytest 허용" → `settings.json`, "테스트는 mock 으로" → `CLAUDE.md`.
+
+**Q: `rules/` 가 아니라 `.claude/` 에 넣으면?**
+A: `.claude/` 는 하네스 설정(`settings.json`, `commands/`, `agents/`, `hooks/`) 자리. `@import` 로 읽히는 지침 문서는 `rules/` 가 의미상 맞는다. 단, `.claude/commands/` 는 슬래시 커맨드 자리로 적극 활용한다 (이 템플릿의 `setup-from-template` 처럼).
