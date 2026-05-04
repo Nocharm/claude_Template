@@ -76,11 +76,17 @@ N 이면 `rm -rf templates/design_concept/`.
 
 ## Step 5: 메타 문서 정리
 
+다운스트림 프로젝트에서 보통 필요 없는 템플릿 메타 폴더를 정리합니다.
+
 `docs/template/` 가 존재하면 묻습니다:
 "`docs/template/` (이 템플릿의 메타 README/USAGE) 는 다운스트림 프로젝트에서 보통 삭제합니다. 삭제할까요? (Y/N)"
 
-Y 면 `rm -rf docs/template/`.
-N 이면 그대로 둠.
+Y 면 `rm -rf docs/template/`. N 이면 그대로 둠.
+
+`docs/superpowers/` 가 존재하면 묻습니다:
+"`docs/superpowers/` (템플릿 자체의 plans/specs 작업 산출물) 는 다운스트림 프로젝트에서 보통 삭제합니다. 삭제할까요? (Y/N)"
+
+Y 면 `rm -rf docs/superpowers/`. N 이면 그대로 둠.
 
 ## Step 6: 루트 README 안내
 
