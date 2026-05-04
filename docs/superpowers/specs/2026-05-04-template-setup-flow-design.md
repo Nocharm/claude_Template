@@ -124,9 +124,9 @@ Inventory of shipped files (rules, languages, templates) appears in **exactly on
 - `CLAUDE.md`'s `@import` lines are runtime imports, not documentation — they get pruned downstream and are not authoritative.
 - Any third document that needs to reference a rule file links to USAGE; it never duplicates the list.
 
-#### `README.md` required content (≤ 80 lines)
+#### `README.md` required content
 
-Developer / handoff perspective. Korean prose.
+Developer / handoff perspective. Korean prose. **최대한 간결하게 유지하는 것이 목적** — 길이 상한은 두지 않지만, 짧게 유지될 이유가 없으면 USAGE 로 빼거나 링크로 대체.
 
 Required sections, in order:
 
@@ -177,6 +177,14 @@ If USAGE shows example commands for downstream stacks (e.g. Python FastAPI), tho
 | Change run instructions (deps, env, OS support) | ❌ | ✅ (실행 방법) |
 | Change template positioning or purpose | ❌ | ✅ (프로젝트 개요) |
 | Reorganize folders | ✅ (인벤토리) | ❌ |
+
+#### 업데이트 주기
+
+- **트리거 기반**: 위 표의 변경이 발생하면 같은 PR/커밋에서 즉시 갱신. 별도 PR 로 미루지 않는다.
+- **주기 검토**: 분기 1회 (3개월). 검토 항목 — 실행 명령이 현재 환경에서 그대로 동작하는가, 인벤토리가 실제 파일과 일치하는가, 죽은 링크 없는가, FAQ 의 답변이 여전히 유효한가.
+- **이벤트 트리거**: 메이저 릴리즈, 신규 팀원 온보딩, OS/툴체인 (uv, Node, Python) 메이저 버전 변경 직후 — 분기 검토를 앞당겨 실행.
+
+이 주기는 README 와 USAGE 양쪽에 동일하게 적용된다.
 
 #### Style
 
