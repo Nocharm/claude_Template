@@ -1,60 +1,147 @@
-# Template Setup Flow Redesign
+# 템플릿 셋업 흐름 재설계
 
-**Date:** 2026-05-04
-**Status:** Approved (brainstorming → spec)
-**Repo:** `claude-code-template`
+작성일: 2026-05-04
+상태: 초안 (사용자 리뷰 대기)
 
 ---
 
-## 1. Problem
+## 1. 배경 / 문제
 
-The repository ships hub-and-spoke Claude Code rules (`CLAUDE.md` + `rules/`) that downstream projects copy wholesale. Three issues compound:
+`claude-code-template` 의 의도된 사용 패턴은 **"이 폴더 전체를 복사 → 그 자리에서 새 프로젝트 시작"** 이다. 그런데 현재 구조는 이 패턴과 어긋나는 부분이 두 군데 있다.
 
-1. **README.md / USAGE.md drift.** The rules/templates inventory is duplicated across `README.md`, `USAGE.md`, and `CLAUDE.md`'s `@import` block. Adding or renaming a rule means editing three places — easy to miss.
-2. **Meta docs squat the project README slot.** Users copy this folder and start a real project in it. The template's `README.md`/`USAGE.md` describe the *template itself*, so they read awkwardly as the new project's docs and tend to be ignored rather than replaced.
-3. **`/init` produces better project-specific docs.** Claude Code's built-in `/init` analyzes the codebase and generates a tailored hub `CLAUDE.md`. The template's empty placeholder hub adds little once `/init` has run.
+1. **`README.md` / `USAGE.md` 가 "템플릿 자체의 사용법"** 이다. 새 프로젝트 입장에서는 자기 README 자리를 메타 문서가 점유하고 있어, 자연스럽게 손이 가지 않고 stale 해진다. 세 곳(`README.md` "구성" 표 / `USAGE.md` "파일 구성" 트리 / `CLAUDE.md` `@import` 목록) 의 inventory 가 어긋나도 알아채기 어렵다.
 
-## 2. Goal
+2. **`/init` 의 결과물이 더 유용하다.** Claude Code 내장 `/init` 은 현재 폴더의 실제 구조를 분석해 그 프로젝트에 맞는 `CLAUDE.md` 를 생성한다. 그에 비해 현재 템플릿의 `CLAUDE.md` 는 "Project / Commands" placeholder 만 담은 빈 허브라 정보 밀도가 낮다.
 
-Redesign the copy-and-start flow so that:
+→ 결과적으로 사용자가 **수동 단계 6개** (USAGE.md 의 Step 1~6) 를 직접 수행해야 하고, 그 중 placeholder 채우기는 자주 누락된다.
 
-- The template provides only what `/init` cannot — reusable rule files, design token templates, and a setup automation.
-- Inventory lives in **exactly one place**; sync drift is structurally impossible.
-- New project setup collapses from six manual steps to three: **copy → `/init` → `/setup-from-template`**.
+---
 
-## 3. Out of Scope
+## 2. 목표 / Non-goals
 
-- Adding new languages, frameworks, agents, or hooks.
-- Translating docs to English.
-- Versioning the template or propagating updates into existing downstream projects.
-- CI / external validation workflows.
+**목표**
+- 복사 직후 새 프로젝트로 자연스럽게 전환되도록 메타 문서를 격리한다.
+- `/init` 을 흐름의 1단계로 통합해 "Project / Commands" 영역은 자동 생성되게 한다.
+- 기존 USAGE.md 의 Step 2~5 (불필요 import 제거, 디자인 토큰 배치, 메타 문서 정리, 검증) 를 슬래시 커맨드 하나로 자동화한다.
+- 새 규칙 (`rules/documentation.md`) 으로 "프로젝트 README/USAGE 는 placeholder 가 아닌 실제 내용을 담아야 한다" 를 명문화한다.
 
-## 4. Design
+**Non-goals**
+- 기존 사용자에 대한 마이그레이션 자동화 (이번엔 새 흐름만 정의; 이미 복사해 쓰는 프로젝트는 영향 없음).
+- 새 언어/프레임워크 규칙 추가 (별도 작업).
+- CI/CD, hooks, 다른 슬래시 커맨드 (별도 작업).
 
-### 4.1 File reorganization
+---
+
+## 3. 디자인
+
+### 3.1 파일 재구성
 
 ```
 claude-code-template/
-├── CLAUDE.md                          # Minimal seed — @import blocks only
-├── README.md                          # One-line placeholder for the new project
+├── CLAUDE.md                            # 최소 seed (## Rules 블록만)
+├── README.md                            # 한 줄짜리 placeholder
 ├── .claude/
-│   ├── settings.local.json            # (existing, untouched)
 │   └── commands/
-│       └── setup-from-template.md     # NEW — slash command
+│       └── setup-from-template.md       # 신규 슬래시 커맨드
 ├── docs/
 │   └── template/
-│       ├── README.md                  # MOVED from root
-│       └── USAGE.md                   # MOVED from root
-├── rules/                             # Unchanged
-└── templates/                         # Unchanged
+│       ├── README.md                    # 기존 README.md 이동 + 새 흐름 반영
+│       └── USAGE.md                     # 기존 USAGE.md 이동 + 새 흐름 반영
+├── rules/
+│   ├── comments.md
+│   ├── config.md
+│   ├── docker.md
+│   ├── testing.md
+│   ├── git.md
+│   ├── security.md
+│   ├── dependencies.md
+│   ├── sync-checklist.md
+│   ├── error-handling.md
+│   ├── documentation.md                 # 신규 규칙 파일
+│   ├── languages/
+│   │   ├── python.md
+│   │   ├── typescript.md
+│   │   └── nextjs.md
+│   └── styling/
+│       └── css.md
+└── templates/
+    ├── design-tokens.css
+    ├── tailwind.theme.ts
+    └── design_concept/
 ```
 
-### 4.2 `CLAUDE.md` seed content
+**바뀌는 것**
+- `README.md`, `USAGE.md` → `docs/template/` 로 이동
+- 루트 `README.md` 새로 작성: `# <project name>\n\n_TODO: 프로젝트 설명_` 한 줄 placeholder
+- 루트 `CLAUDE.md` 단순화: `Project` / `Commands` 섹션 제거, `## Rules` + `## Language-Specific Rules` + `## Frontend Rules` 만 남김. 맨 위에 한 줄 안내 주석
+- `rules/documentation.md` 신설
+- `.claude/commands/setup-from-template.md` 신설
 
-The hub ships only `@import` blocks. No `## Project`, no `## Commands` — `/init` generates those.
+**그대로 두는 것**
+- `rules/` 의 기존 9개 파일
+- `rules/languages/`, `rules/styling/` 전체
+- `templates/` 전체
+- `.gitignore`
+- `.claude/settings.local.json`
+
+### 3.2 새 사용 흐름
+
+복사 후 사용자가 거치는 단계:
+
+```bash
+# 1) 복사
+cp -r /path/to/claude-code-template ~/new-project && cd ~/new-project
+
+# 2) Claude Code 안에서:
+/init                       # 프로젝트 분석 → CLAUDE.md 의 Project/Commands 섹션 자동 생성
+                            # (기존 ## Rules 블록은 보존되거나, 다음 단계에서 복원)
+
+/setup-from-template        # 스택 감지 → import 가지치기 → 토큰 배치 → 메타 문서 정리 → 검증
+```
+
+기존 USAGE.md 의 Step 2~5 가 한 커맨드로 합쳐진다.
+
+### 3.3 슬래시 커맨드: `/setup-from-template`
+
+**위치**: `.claude/commands/setup-from-template.md` (git 커밋 대상)
+
+**파일 형식**: Claude Code slash command 의 표준 markdown — 커맨드 본문에 절차를 자연어로 기술하고, Claude 가 이를 단계별로 실행. 비가역 작업(파일 삭제·이동) 전에는 명시적 사용자 확인을 받는다.
+
+**절차**:
+
+| # | 단계 | 동작 | 사용자 입력 |
+|---|------|------|-----|
+| 1 | 스택 감지 | 다음 파일 존재 확인하여 추론<br>• `package.json` → JS/TS<br>• `pyproject.toml` 또는 `requirements.txt` → Python<br>• `next.config.{js,mjs,ts}` → Next.js<br>• `tailwind.config.{js,ts}` → Tailwind<br>• `app/`, `pages/`, `src/components/` 등 → 프론트엔드 가능성 | 자동 |
+| 2 | `## Rules` 블록 보강 | `/init` 결과 `CLAUDE.md` 에 `## Rules` 블록이 없으면 추가. 있으면 감지된 스택에 따라 사용 안 하는 `@rules/languages/*.md` / `@rules/styling/*.md` 라인 제거 | 감지 결과 보여주고 Y/N |
+| 3 | 디자인 토큰 배치 | 프론트엔드면 "Tailwind / vanilla CSS / 둘 다 / 안 씀" 묻고 해당 템플릿을 적절한 경로로 복사<br>• Tailwind → `templates/tailwind.theme.ts` 를 루트 `tailwind.theme.ts` 로<br>• vanilla CSS → `templates/design-tokens.css` 를 `styles/design-tokens.css` 로<br>• 사용 안 하는 템플릿은 `templates/` 에서 제거 | 선택 |
+| 4 | 디자인 컨셉 레퍼런스 처리 | `templates/design_concept/` 유지/삭제 (보통 새 프로젝트에서는 삭제) | Y/N |
+| 5 | 메타 문서 정리 | `docs/template/` 삭제 여부 (이 프로젝트가 더 이상 템플릿이 아니므로 보통 삭제) | Y/N |
+| 6 | 루트 README 안내 | 루트 `README.md` 가 placeholder 그대로면 "`/init` 결과나 사용자 직접 작성으로 채워야 함" 한 번 알림 | 자동 (행동 강제 아님) |
+| 7 | 검증 | `CLAUDE.md` 의 모든 `@rules/...` 경로를 grep 으로 추출 → 각각 파일이 실제 존재하는지 확인 → 결과 요약 출력. 깨진 경로 있으면 경고 | 자동 |
+
+**1회성 보장**: 커맨드 첫 부분에서 "이미 셋업이 끝난 프로젝트인지" 휴리스틱으로 체크 (예: `docs/template/` 부재 + `CLAUDE.md` 에 placeholder 없음). 끝난 것 같으면 "다시 실행하시겠습니까?" 묻고 진행.
+
+### 3.4 신규 규칙: `rules/documentation.md`
+
+다운스트림 프로젝트가 "템플릿 메타 문서를 그대로 두지 않고 실제 프로젝트 문서를 작성"하도록 강제하는 규칙. 허브 `CLAUDE.md` 의 `## Rules` 블록에 `@rules/documentation.md` 로 import.
+
+**규칙 요지**:
+- 루트 `README.md` 는 **현재 프로젝트** 의 설명을 담는다. 무엇을 하는 프로젝트인지, 누가 쓰는지, 어떻게 시작하는지(setup), 핵심 명령어, 주요 디렉터리. placeholder (`_TODO_`, `<project name>`) 상태로 커밋 금지.
+- `USAGE.md` 가 필요한 프로젝트(CLI 도구, 라이브러리, 사용자 가이드가 별도로 필요한 앱 등) 라면 **그 프로젝트의 사용법**을 작성한다. 템플릿 메타 가이드를 그대로 두지 않는다.
+- 템플릿에서 시작한 프로젝트라면 첫 작업 중 하나로 루트 `README.md` 를 실제 내용으로 교체한다.
+- 코드/구조가 바뀌면 README 의 해당 섹션도 함께 갱신한다 (`rules/sync-checklist.md` 와 일관).
+- README 가 placeholder 상태인 채로 `feat:` / `fix:` 커밋이 쌓이지 않게 한다 — 첫 의미있는 커밋 전에 README 를 한 번이라도 채운다.
+
+이 규칙은 일반 규칙이므로 `## Rules` 블록 (조건부 아님) 에 추가한다.
+
+### 3.5 루트 `CLAUDE.md` seed 의 새 형태
 
 ```markdown
-<!-- Copy/init 후 /setup-from-template 으로 정리하세요 -->
+<!--
+이 파일은 claude-code-template seed 입니다.
+복사 후 `/init` 으로 Project/Commands 섹션을 채우고,
+`/setup-from-template` 으로 import 라인을 정리하세요.
+-->
 
 ## Rules
 
@@ -67,6 +154,7 @@ The hub ships only `@import` blocks. No `## Project`, no `## Commands` — `/ini
 @rules/dependencies.md
 @rules/sync-checklist.md
 @rules/error-handling.md
+@rules/documentation.md
 
 ## Language-Specific Rules
 
@@ -79,7 +167,10 @@ The hub ships only `@import` blocks. No `## Project`, no `## Commands` — `/ini
 @rules/styling/css.md
 ```
 
-### 4.3 Root `README.md` placeholder
+`/init` 이 이 파일을 만났을 때 동작:
+- Claude Code `/init` 은 기존 `CLAUDE.md` 가 있으면 그 위에 augment 하는 동작이 권장이지만, 도구 버전에 따라 overwrite 할 수도 있다. 어느 쪽이든 `/setup-from-template` 의 단계 2 가 `## Rules` 블록의 존재/내용을 보장하므로 안전하다.
+
+### 3.6 루트 `README.md` placeholder
 
 ```markdown
 # <project name>
@@ -87,129 +178,73 @@ The hub ships only `@import` blocks. No `## Project`, no `## Commands` — `/ini
 _TODO: 프로젝트 설명_
 ```
 
-The user's own project description (or `/init`'s output) replaces this.
+`/init` 또는 사용자가 첫 의미있는 커밋 전에 교체.
 
-### 4.4 Slash command: `/setup-from-template`
+### 3.7 `docs/template/USAGE.md` 갱신 내용
 
-Located at `.claude/commands/setup-from-template.md`. Instruction-style markdown that Claude Code follows step by step. Each destructive step (file delete, file move, `CLAUDE.md` edit) requires explicit Y confirmation; detection and validation steps run silently.
+기존 6단계를 새 3단계 흐름으로 다시 쓴다. FAQ 항목 일부도 바뀐다.
 
-| # | Step | Action | User input |
-|---|---|---|---|
-| 1 | **Stack detection** | Probe `package.json`, `next.config.*`, `tailwind.config.*`, `pyproject.toml`, `requirements.txt`. Report findings. | auto |
-| 2 | **Prune language imports** | Remove unused `@rules/languages/*.md` and `## Frontend Rules` lines from `CLAUDE.md` based on detection. Show diff. | Y/N |
-| 3 | **Restore `## Rules` block** | If `/init` removed/replaced the canonical `## Rules` import block, append it back. Show diff. | Y/N |
-| 4 | **Place design tokens** (frontend only) | Ask Tailwind vs vanilla CSS. Copy the matching template file (`templates/tailwind.theme.ts` → root, or `templates/design-tokens.css` → `styles/`). Delete the unused one. | Tailwind/CSS |
-| 5 | **Design concept refs** (frontend only) | Ask whether to keep `templates/design_concept/`. Default: delete. | Y/N |
-| 6 | **Meta docs cleanup** | Ask whether to delete `docs/template/`. Default: delete. | Y/N |
-| 7 | **Validation** | Grep all `@import` paths in `CLAUDE.md`, verify each resolves. Print summary. | auto |
+새 구조:
+1. **Step 1.** 폴더 복사
+2. **Step 2.** `/init` 실행 (Project/Commands 섹션 자동 생성)
+3. **Step 3.** `/setup-from-template` 실행 (자동 정리)
+4. **Step 4 (선택).** 프로젝트 특화 규칙 추가 — 기존 Step 5 와 동일
 
-### 4.5 README / USAGE writing rules
+기존 Step 3 (Commands 채우기), Step 4 (디자인 토큰 채우기), Step 6 (커밋) 은 새 흐름에 흡수되거나 자명해진다. Step 2 (사용 안 하는 import 제거) 는 슬래시 커맨드가 처리.
 
-Apply to **any** `README.md` or `USAGE.md` produced from or by this template — including the template's own meta docs in `docs/template/` and the downstream project READMEs that this template helps create. Documented here so the convention propagates.
+FAQ 변경:
+- "이 템플릿을 안 쓰고 그냥 `/init` 만 하면?" 질문 추가 — 답: 그래도 되지만 `rules/`, `templates/` 의 자산을 못 쓴다.
+- 기존 "rules/ 가 아니라 .claude/ 에 넣으면 안 되나?" 질문은 유지하되, 이제 `.claude/commands/` 도 의미있게 사용한다는 한 줄 추가.
 
-#### Audience split
+### 3.8 `docs/template/README.md` 갱신 내용
 
-| File | Audience | Purpose |
-|---|---|---|
-| `README.md` | 개발자, 업무 인수인계자 | 프로젝트 개요 + 실행 방법 |
-| `USAGE.md` | 사용자 (end user) | 사용 방법 |
+- 새 흐름의 "Quick Start" 를 3단계로 갱신 (cp → `/init` → `/setup-from-template`)
+- "구성" 표에 `docs/template/`, `.claude/commands/`, `rules/documentation.md` 추가
 
-A reader picking up either file cold should immediately know they're in the right place.
+---
 
-#### Single source of truth
+## 4. 파일별 변경 요약
 
-Inventory of shipped files (rules, languages, templates) appears in **exactly one place**: `docs/template/USAGE.md` § "파일 구성". Nowhere else.
+| 파일 | 변경 유형 | 비고 |
+|------|----------|------|
+| `README.md` | 교체 | placeholder 한 줄로 |
+| `USAGE.md` | 이동 | → `docs/template/USAGE.md` 로 옮긴 뒤 새 흐름 반영해 다시 씀 |
+| `CLAUDE.md` | 수정 | Project / Commands 섹션 제거, `@rules/documentation.md` 추가, 상단 안내 주석 |
+| `docs/template/README.md` | 신규 (이동 + 갱신) | 기존 `README.md` 를 옮겨 새 흐름 반영해 갱신 |
+| `docs/template/USAGE.md` | 신규 (이동 + 갱신) | 위와 동일 |
+| `rules/documentation.md` | 신규 | 3.4 의 규칙 |
+| `.claude/commands/setup-from-template.md` | 신규 | 3.3 의 슬래시 커맨드 |
+| `rules/sync-checklist.md` | 미변경 검토 | "README 갱신" 항목이 이미 있음. `docs/template/` 추가 여부 검토 — 일반 다운스트림에는 `docs/template/` 가 없으므로 추가하지 않는 것이 맞음 |
 
-- `README.md` does not list rule files. It links to USAGE for the inventory.
-- `CLAUDE.md`'s `@import` lines are runtime imports, not documentation — they get pruned downstream and are not authoritative.
-- Any third document that needs to reference a rule file links to USAGE; it never duplicates the list.
+---
 
-#### `README.md` required content
+## 5. 엣지 케이스 / 결정 사항
 
-Developer / handoff perspective. Korean prose. **최대한 간결하게 유지하는 것이 목적** — 길이 상한은 두지 않지만, 짧게 유지될 이유가 없으면 USAGE 로 빼거나 링크로 대체.
+- **`/init` 이 `## Rules` 블록을 지운 경우**: 슬래시 커맨드 단계 2 가 항상 보강하므로 안전.
+- **사용자가 `/setup-from-template` 을 두 번 실행**: 첫 실행 후 `docs/template/` 가 없거나 placeholder 가 사라진 상태를 휴리스틱으로 감지하고 재실행 의사를 묻는다.
+- **언어 자동 감지 실패**: 모호하면 사용자에게 명시적으로 "Python? TypeScript? 둘 다? 둘 다 아님?" 묻는다.
+- **`templates/design_concept/` 를 유지하기로 한 경우**: 이후 빌드 단계에서 `next/image` 등이 그 폴더를 보지 않도록 빌드/lint 가 자체적으로 제외하거나 사용자가 .gitignore 에 추가하도록 안내. 슬래시 커맨드는 강제하지 않고 한 줄 알림만.
+- **이미 다운스트림에서 쓰고 있는 기존 프로젝트**: 영향 없음. 새 흐름은 신규 복사부터 적용.
+- **루트 README 가 placeholder 인 채로 첫 커밋 시도**: `rules/documentation.md` 가 권고하지만 강제(hook) 하지는 않는다. 강제는 별도 작업.
 
-Required sections, in order:
+---
 
-1. **프로젝트 개요** — what, why, who. ≤ 4 sentences.
-2. **실행 방법** — macOS 와 Windows 를 **반드시 분리** 표기. 명령이 동일하면 동일하다고 명시 (생략 금지).
-   ```bash
-   # macOS / Linux
-   cp -r template/ ~/new-project
-   ```
-   ```powershell
-   # Windows (PowerShell)
-   Copy-Item -Recurse template ~/new-project
-   ```
-3. **(Python 프로젝트의 경우)** Install / run 명령은 uv 와 pip 를 **항상 함께** 표기. uv 가 권장, pip 는 fallback.
-   ```bash
-   # uv (preferred)
-   uv pip install -r requirements.txt
+## 6. 검증
 
-   # pip (fallback)
-   pip install -r requirements.txt
-   ```
-4. **Link to USAGE** for end-user docs.
+스펙 자체에는 자동 테스트가 없지만 구현 후 다음을 손으로 확인한다.
 
-Forbidden in README: 파일 인벤토리, FAQ, 사용자용 how-to, 단계별 튜토리얼.
+1. **빈 폴더 시나리오**: 빈 디렉터리에 이 템플릿을 복사 → `/init` → `/setup-from-template` 의 단계 1 이 "스택 미감지 → 어떤 언어인가요?" 로 사용자에게 묻는지.
+2. **Next.js 시나리오**: `package.json` + `next.config.ts` + `tailwind.config.ts` 가 있는 폴더에 복사 → 자동으로 Python 라인이 제거되고 Tailwind 토큰이 배치되는지.
+3. **Python 시나리오**: `pyproject.toml` 만 있는 폴더에 복사 → JS/TS 라인과 Frontend 섹션 전체가 제거되는지.
+4. **검증 단계 7**: 일부러 `@rules/존재안함.md` 라인을 추가한 뒤 실행 → 경고가 나는지.
+5. **재실행**: `/setup-from-template` 을 마친 폴더에서 다시 실행 → "이미 셋업된 것 같음, 계속?" 묻는지.
 
-#### `USAGE.md` required content (≤ 300 lines)
+---
 
-End-user perspective. Korean prose. Rule bodies referenced from USAGE stay in English (that is the language of the rules themselves).
+## 7. 후속 작업 (이번 스코프 밖)
 
-Required sections, in order:
-
-1. **파일 구성** — the *only* inventory in the repo.
-2. **사용 흐름** — 3 steps: copy → `/init` → `/setup-from-template`.
-3. **`/setup-from-template` 동작** — each step's behavior and prompts (mirrors §4.4).
-4. **수동 조정** — when/how to manually edit if the slash command does not fit.
-5. **새 규칙 추가하기** — process for adding a rule file and updating USAGE.
-6. **FAQ**.
-
-If USAGE shows example commands for downstream stacks (e.g. Python FastAPI), those examples follow the README rules above (OS split, uv+pip pairing).
-
-#### Update triggers
-
-| Change | Update USAGE | Update README |
-|---|---|---|
-| Add/remove rule file | ✅ (인벤토리) | ❌ |
-| Add/remove language | ✅ (인벤토리) | ❌ |
-| Change setup flow / slash command behavior | ✅ (사용 흐름 / 동작) | ❌ |
-| Change run instructions (deps, env, OS support) | ❌ | ✅ (실행 방법) |
-| Change template positioning or purpose | ❌ | ✅ (프로젝트 개요) |
-| Reorganize folders | ✅ (인벤토리) | ❌ |
-
-#### 업데이트 주기
-
-- **트리거 기반**: 위 표의 변경이 발생하면 같은 PR/커밋에서 즉시 갱신. 별도 PR 로 미루지 않는다.
-- **주기 검토**: 분기 1회 (3개월). 검토 항목 — 실행 명령이 현재 환경에서 그대로 동작하는가, 인벤토리가 실제 파일과 일치하는가, 죽은 링크 없는가, FAQ 의 답변이 여전히 유효한가.
-- **이벤트 트리거**: 메이저 릴리즈, 신규 팀원 온보딩, OS/툴체인 (uv, Node, Python) 메이저 버전 변경 직후 — 분기 검토를 앞당겨 실행.
-
-이 주기는 README 와 USAGE 양쪽에 동일하게 적용된다.
-
-#### Style
-
-- Korean prose, terse imperative.
-- Code blocks for commands; prose for explanation.
-- Tables for inventories and decision matrices.
-- One canonical example per concept.
-- **Multi-OS commands**: separate, clearly labeled code blocks (`# macOS / Linux`, `# Windows (PowerShell)`). Never assume cross-platform equivalence silently.
-- **Python install/run commands**: always pair uv and pip. Showing only one is forbidden.
-
-## 5. Acceptance Criteria
-
-- Copying the template, running `/init`, then `/setup-from-template` produces a working project with the appropriate rules, **with no manual file editing required** for common stacks: Python, TS, Next.js+Tailwind, Next.js+CSS Modules, Python+Docker.
-- After cleanup, the new project root contains only files relevant to the new project — no `docs/template/`, no unused `templates/` files, no irrelevant `@import` lines.
-- Every `@import` path in the final `CLAUDE.md` resolves to a real file (validated by step 7).
-- Inventory drift is structurally prevented: adding a rule only requires touching the rule file itself and `docs/template/USAGE.md` § "파일 구성".
-
-## 6. Trade-offs Accepted
-
-- **Backwards incompatible.** Existing projects that copied the old template will not auto-receive the slash command. They keep working; they just don't benefit from the new flow unless re-templated.
-- **Setup is two commands, not one.** `/init` and `/setup-from-template` are not combined; Claude Code does not expose `/init` as composable, and replicating its analysis in our slash command is not worth the maintenance cost.
-- **The slash command depends on Claude Code at setup time.** Acceptable — this is a Claude Code template by definition.
-
-## 7. Open Questions
-
-None at spec time. Implementation may surface details around:
-- Exact stack-detection heuristics (e.g., monorepo with both `package.json` and `pyproject.toml`).
-- Whether `/init` reliably preserves an existing `## Rules` block. If not, step 3 of the slash command is load-bearing.
+- pre-commit hook 으로 README placeholder 상태 차단
+- 영문판 `docs/template/README.en.md` / `USAGE.en.md`
+- 추가 언어 (Go, Rust 등) 규칙
+- 다른 슬래시 커맨드 (`/add-rule`, `/sync-template-update` 등)
+- 모노레포 / nested CLAUDE.md 가이드
