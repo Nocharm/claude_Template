@@ -1,34 +1,13 @@
-# CLAUDE.md
+<!--
+이 파일은 claude-code-template seed.
 
-허브 파일. 프로젝트 설명과 명령어는 이 파일에 직접 적고, 일반 규칙은 `rules/` 하위 파일을 `@import` 로 불러온다.
+[다운스트림 프로젝트 시작 시]
+1. `/init` 실행 — Project/Commands 섹션 자동 생성
+2. `/setup-from-template` 실행 — 사용 안 하는 import 라인 정리, 디자인 토큰 배치, 메타 문서 정리
 
----
-
-## Project
-
-<한 줄 프로젝트 설명 — 이 저장소가 무엇이고 누가 쓰는지>
-
----
-
-## Commands
-
-```bash
-# Build
-<your build command here>
-
-# Test
-<your test command here>              # full suite
-<your single test command here>       # single test
-
-# Lint / Format
-<your lint command here>
-<your format command here>
-
-# Dev server
-<your dev server command here>
-```
-
----
+[이 템플릿 자체를 편집 중이라면]
+- 레포 성격, 구조, 편집 컨벤션은 docs/template/README.md 참고.
+-->
 
 ## Rules
 
@@ -41,8 +20,7 @@
 @rules/dependencies.md
 @rules/sync-checklist.md
 @rules/error-handling.md
-
----
+@rules/documentation.md
 
 ## Language-Specific Rules
 
@@ -50,8 +28,6 @@
 
 @rules/languages/python.md
 @rules/languages/typescript.md
-
----
 
 ## Frontend Rules (프론트엔드 프로젝트만)
 
