@@ -22,8 +22,8 @@ Claude Code 프로젝트용 공통 규칙 + 셋업 자동화 템플릿.
 
 ```bash
 # 1) 복사
-cp -r /path/to/claude-code-template ~/new-project
-cd ~/new-project
+cp -r . ../project_path
+cd ~/project_path
 rm -rf .git && git init
 
 # 2) /init  (Claude Code 안에서)
