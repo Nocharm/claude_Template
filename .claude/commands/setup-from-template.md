@@ -34,17 +34,18 @@ description: Finish setting up a project that was started by copying claude-code
 
 모호하면 사용자에게 "Python? TypeScript? 둘 다? 둘 다 아님?" 으로 명시적 확인을 받습니다.
 
-## Step 2: `## Rules` 블록 보강
+## Step 2: rules @import 블록 정리
 
-`CLAUDE.md` 를 읽습니다.
+`CLAUDE.md` 를 읽고 블록별로 처리:
 
-- `## Rules` 블록이 없으면 → seed 의 표준 범용 블록을 추가합니다 (`@rules/common/comments.md` 부터 `@rules/common/testing.md` 까지, `@rules/common/naming.md` 포함).
-- `## Rules — 백엔드/Docker` 블록: 백엔드/배포 프로젝트가 아니면 블록 통째로 제거 후보 (`@rules/backend/*`).
-- `## Language-Specific Rules` 블록의 import 라인 중, 감지된 언어가 아닌 것은 제거 후보로 사용자에게 확인:
-  - Python 미감지 → `@rules/languages/python.md` 제거
-  - JS/TS 미감지 → `@rules/languages/typescript.md` 제거
+- `## Working Style` + `@rules/guidelines.md` (행동 가이드, 최우선): **항상 유지. 제거 금지.**
+- `## Rules — 범용 (유지)`: 없으면 seed 표준 블록 추가 (`@rules/common/comments.md`~`@rules/common/testing.md`, `naming.md` 포함). 유지.
+- `## Rules — 백엔드/Docker`: 백엔드/배포 아니면 블록 통째 제거 후보 (`@rules/backend/*`).
+- `## Language-Specific Rules`: 감지 안 된 언어 라인 제거 후보.
+  - Python 미감지 → `@rules/languages/python.md`
+  - JS/TS 미감지 → `@rules/languages/typescript.md`
 
-각 제거 전에 "다음 라인을 제거할까요? Y/N" 묻습니다 (한 묶음으로 한 번만 물어도 됨).
+제거 전 "이 라인들 제거? Y/N" 한 번 확인(묶음).
 
 ## Step 3: 메타 문서 정리
 
@@ -88,7 +89,6 @@ done
 - 검증 결과: 모두 OK / N개 경고
 ```
 
-마지막으로 사용자에게:
-"셋업이 끝났습니다. 다음 권장 작업: ① `README.md` 를 프로젝트 설명으로 교체 ② `git add -A && git commit -m 'chore: project bootstrap from template'`"
-
-이 두 작업은 사용자가 직접 수행하도록 두고, 자동 커맨드가 자동 커밋하지 않습니다.
+다음 권장 작업 안내 (자동 커밋 금지 — 사용자가 직접 수행):
+- `README.md` 를 프로젝트 설명으로 교체.
+- 커밋은 `rules/common/git.md` 규칙을 따른다: 커밋 직전 `PROGRESS.md` 갱신(없으면 생성) → 영/한 병기 메시지 → specific `git add <files>` (`-A` 지양).

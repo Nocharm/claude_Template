@@ -8,3 +8,4 @@
 - **refactor(commands)**: `setup-from-template`를 새 rules 구조(common/backend 경로)에 맞게 갱신, 프론트엔드 감지·디자인 토큰 배치 로직 제거, Step 재번호.
 - **feat(commands)**: `/sync`(변경 기반)·`/sync-all`(전체 점검) 슬래시 커맨드 추가. 체크리스트 표는 `backend/sync-checklist.md` 단일 소스를 참조.
 - **docs(template)**: 메타 문서(README·USAGE)를 새 폴더 구조·프론트 제거·`guidelines.md`·`/sync`·`/sync-all`에 맞게 동기화.
+- **refactor(commands)**: `setup-from-template` 마무리 커밋 가이드를 `git.md` 규칙에 위임(PROGRESS·영한 병기·specific add), Step 2 헤딩명 정합, Working Style 유지 명시.
