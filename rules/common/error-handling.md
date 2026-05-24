@@ -5,4 +5,4 @@
 - Error messages must include context (request params, status codes).
 - External APIs: retry with logging, then raise the last error.
 - Use structured logging with fields, not string interpolation.
-- Only validate at system boundaries (user input, external APIs) — trust internal code.
+- Trust internal code — validate only at boundaries, don't re-validate internally (input validation rules: `security.md`).

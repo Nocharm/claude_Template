@@ -9,18 +9,32 @@
 - 레포 성격, 구조, 편집 컨벤션은 docs/template/README.md 참고.
 -->
 
-## Rules
+## Working Style — 최우선 (모든 룰보다 먼저)
 
-@rules/comments.md
-@rules/config.md
-@rules/docker.md
-@rules/testing.md
-@rules/git.md
-@rules/security.md
-@rules/dependencies.md
-@rules/sync-checklist.md
-@rules/error-handling.md
-@rules/documentation.md
+**모든 작업의 행동 기반.** 아래 도메인 룰과 충돌해도 이 가이드의 원칙이 우선한다.
+
+@rules/guidelines.md
+
+---
+
+## Rules — 범용 (유지)
+
+@rules/common/comments.md
+@rules/common/naming.md
+@rules/common/git.md
+@rules/common/security.md
+@rules/common/error-handling.md
+@rules/common/dependencies.md
+@rules/common/documentation.md
+@rules/common/testing.md
+
+## Rules — 백엔드/Docker (아니면 이 블록 삭제)
+
+배포/컨테이너 전제 규칙. 라이브러리·CLI·프론트 단독 프로젝트면 이 블록을 통째로 삭제한다.
+
+@rules/backend/config.md
+@rules/backend/docker.md
+@rules/backend/sync-checklist.md
 
 ## Language-Specific Rules
 
@@ -28,11 +42,3 @@
 
 @rules/languages/python.md
 @rules/languages/typescript.md
-
-## Frontend Rules (프론트엔드 프로젝트만)
-
-프론트엔드 프로젝트가 아니면 이 섹션을 통째로 삭제한다.
-CSS 사용 시 `templates/` 의 디자인 토큰 템플릿을 먼저 채우고 시작한다 (`rules/styling/css.md` 참조).
-
-@rules/languages/nextjs.md
-@rules/styling/css.md

@@ -4,4 +4,3 @@
 - Pin exact versions in lock files.
 - Verify a new dependency is truly needed before adding — prefer stdlib solutions.
 - Document WHY a non-obvious dependency was chosen.
-- Dockerfile installs only production dependencies.

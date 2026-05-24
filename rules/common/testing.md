@@ -5,4 +5,4 @@
 - Do NOT mock internal logic — test the real code paths.
 - Follow the **AAA pattern**: Arrange, Act, Assert.
 - Run single tests during development, full suite before commit.
-- Test dependencies live in a separate dev requirements file.
+- Test deps belong in the dev requirements file (see `dependencies.md`).

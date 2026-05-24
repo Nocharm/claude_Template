@@ -1,6 +1,6 @@
-# Code Change Sync Checklist
+# Sync Checklist
 
-When modifying code, keep these files in sync. Check even if no change is needed.
+Run when sync is explicitly requested — via `/sync` (change-based) or `/sync-all` (full sweep), not automatically on every code change (frequent syncing adds overhead without payoff). When asked, check these files; some may need no change.
 
 | File | When to update |
 |------|----------------|
