@@ -7,43 +7,41 @@
 ## 파일 구성
 
 ```
-CLAUDE.md                       # 허브 seed (## Rules / Language-Specific / Frontend 만)
+CLAUDE.md                       # 허브 seed (## Rules / Language-Specific 만)
 README.md                       # 프로젝트 placeholder (한 줄)
 .claude/
   commands/
     setup-from-template.md      # 셋업 자동화 슬래시 커맨드
+    sync.md                     # /sync — 변경 기반 동기화
+    sync-all.md                 # /sync-all — 전체 체크리스트 점검
 docs/
   template/
     README.md                   # 이 템플릿의 README (다운스트림에서는 보통 삭제)
     USAGE.md                    # 이 가이드 (다운스트림에서는 보통 삭제)
 rules/
-  comments.md
-  config.md
-  docker.md
-  testing.md
-  git.md
-  security.md
-  dependencies.md
-  sync-checklist.md
-  error-handling.md
-  documentation.md              # README/USAGE 작성 규칙
+  guidelines.md                 # 행동 가이드 (최우선)
+  common/                       # 범용 규칙
+    comments.md
+    naming.md
+    git.md
+    security.md
+    error-handling.md
+    dependencies.md
+    documentation.md            # README/USAGE 작성 규칙
+    testing.md
+  backend/                      # 백엔드·Docker 규칙
+    config.md
+    docker.md
+    sync-checklist.md
   languages/
     python.md
     typescript.md
-    nextjs.md
-  styling/
-    css.md
-templates/
-  design-tokens.css             # vanilla CSS / CSS Modules 디자인 토큰
-  tailwind.theme.ts             # Tailwind 디자인 토큰 (같은 스키마)
-  design_concept/               # 디자인 컨셉 레퍼런스 (5개)
 ```
 
 **관계:**
 - `CLAUDE.md` 는 허브 seed. `## Rules` 블록의 `@rules/<file>.md` import 만 담는다.
 - `/init` 이 Project / Commands 같은 프로젝트 메타 섹션을 자동 생성.
-- `/setup-from-template` 이 사용 안 하는 언어 import, 디자인 토큰 배치, 메타 문서 정리를 자동화.
-- `templates/` 는 `@import` 대상이 아니다 — 슬래시 커맨드 또는 사용자가 실제 파일로 복사하는 **파일 템플릿**.
+- `/setup-from-template` 이 사용 안 하는 언어 import 가지치기, 메타 문서 정리를 자동화.
 
 ---
 
@@ -80,7 +78,7 @@ Claude Code 안에서:
 - "Commands" — build / test / lint / dev 명령어 (실제 의존성 파일에서 추론)
 - "Architecture" / 주요 디렉터리 설명
 
-기존의 `## Rules` / `## Language-Specific Rules` / `## Frontend Rules` 블록은 그대로 보존되는 것이 일반적이다.
+기존의 `## Rules` / `## Language-Specific Rules` 블록은 그대로 보존되는 것이 일반적이다.
 다만 `/init` 의 동작 (도구 버전·폴더 상태에 따라 augment 또는 overwrite) 에 따라 블록이 변경되거나 사라질 수 있다 — 그 경우에도 다음 Step 의 `/setup-from-template` 이 `## Rules` 블록을 복원/정상화하므로 그대로 진행하면 된다.
 
 ---
@@ -95,13 +93,11 @@ Claude Code 안에서:
 
 다음을 자동 수행한다:
 0. 재실행 감지 — `docs/template/` 부재 + `README.md` placeholder 부재 등 휴리스틱으로 이미 셋업된 폴더인지 확인. 그렇다면 진행 여부를 묻고 N 이면 종료
-1. 스택 감지 (`package.json`, `pyproject.toml`, `next.config.*`, `tailwind.config.*` 등)
-2. `## Language-Specific Rules` / `## Frontend Rules` 의 사용 안 하는 `@import` 라인 제거
-3. 디자인 토큰 템플릿을 적절한 경로로 복사 (Tailwind / vanilla CSS / 둘 다 / 안 씀 중 선택)
-4. `templates/design_concept/` 유지/삭제 확인
-5. 메타 문서 (`docs/template/`) 삭제 확인 — 이 프로젝트는 더 이상 템플릿이 아니므로 보통 삭제
-6. 루트 `README.md` 가 placeholder 상태면 안내 (사용자 또는 `/init` 결과로 교체할 것)
-7. 모든 `@import` 경로가 실제 파일을 가리키는지 검증 후 결과 요약
+1. 스택 감지 (`package.json`, `pyproject.toml` / `requirements.txt`)
+2. `## Rules — 백엔드/Docker` / `## Language-Specific Rules` 의 사용 안 하는 `@import` 라인 제거
+3. 메타 문서 (`docs/template/`) 삭제 확인 — 이 프로젝트는 더 이상 템플릿이 아니므로 보통 삭제
+4. 루트 `README.md` 가 placeholder 상태면 안내 (사용자 또는 `/init` 결과로 교체할 것)
+5. 모든 `@import` 경로가 실제 파일을 가리키는지 검증 후 결과 요약
 
 비가역 작업 (파일 삭제·이동) 전에는 매번 사용자 확인을 받는다.
 
@@ -152,7 +148,7 @@ src/
 ## FAQ
 
 **Q: `/init` 만 쓰고 이 템플릿 안 쓰면 안 되나?**
-A: 가능하다. 다만 `rules/` 의 일반 규칙들과 `templates/` 의 디자인 토큰을 못 쓴다. 이 템플릿의 가치는 `## Rules` 블록과 `templates/` 자산.
+A: 가능하다. 다만 `rules/` 의 공통 규칙들을 못 쓴다. 이 템플릿의 가치는 `## Rules` 블록(범용/백엔드/언어)과 행동 가이드.
 
 **Q: `/setup-from-template` 을 다시 실행해도 되나?**
 A: 안전. 휴리스틱으로 이미 셋업된 폴더인지 감지해 사용자에게 진행 여부를 묻는다.
