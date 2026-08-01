@@ -9,13 +9,14 @@ Claude Code 프로젝트용 공통 규칙 + 셋업 자동화 템플릿.
 
 | 파일/폴더 | 역할 |
 |-----------|------|
-| `CLAUDE.md` | 허브 seed. `## Rules` (범용 / 백엔드·Docker) / `## Language-Specific` `@import` 만 담는다 |
+| `CLAUDE.md` | 허브 seed. `## Rules` (범용 / 백엔드·Docker / 프론트엔드) / `## Language-Specific` `@import` 만 담는다 |
 | `.claude/commands/setup-from-template.md` | 셋업 자동화 슬래시 커맨드 |
 | `.claude/commands/sync.md` | `/sync` — 변경 감지 후 영향받는 파일만 동기화 |
 | `.claude/commands/sync-all.md` | `/sync-all` — 동기화 체크리스트 전체 점검 |
 | `rules/guidelines.md` | 행동 가이드 (최우선, `CLAUDE.md` 최상단 링크) |
 | `rules/common/` | 범용 규칙 (주석·네이밍·Git·보안·에러·의존성·문서·테스트) |
 | `rules/backend/` | 백엔드·Docker 규칙 (설정·Docker·동기화) — 백엔드/배포 프로젝트만 |
+| `rules/frontend/` | 프론트엔드 규칙 (`data-testid` 식별자) — UI 프로젝트만 |
 | `rules/languages/` | 언어 규칙 (Python, TypeScript) |
 | `docs/template/` | **이 템플릿** 의 메타 문서 (`README.md`, `USAGE.md`). 다운스트림에서는 보통 삭제 |
 | `.gitignore` | Claude 로컬 파일·env·OS·언어별 산출물 제외 |

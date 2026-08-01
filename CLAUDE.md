@@ -36,6 +36,12 @@
 @rules/backend/docker.md
 @rules/backend/sync-checklist.md
 
+## Rules — 프론트엔드 (아니면 이 블록 삭제)
+
+UI 컴포넌트 작성 규칙. 백엔드·라이브러리·CLI 단독 프로젝트면 이 블록을 통째로 삭제한다.
+
+@rules/frontend/identifiers.md
+
 ## Language-Specific Rules
 
 프로젝트에서 사용하는 언어만 남기고 나머지 줄은 삭제한다.
