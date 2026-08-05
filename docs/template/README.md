@@ -13,6 +13,7 @@ Claude Code 프로젝트용 공통 규칙 + 셋업 자동화 템플릿.
 | `.claude/commands/setup-from-template.md` | 셋업 자동화 슬래시 커맨드 |
 | `.claude/commands/sync.md` | `/sync` — 변경 감지 후 영향받는 파일만 동기화 |
 | `.claude/commands/sync-all.md` | `/sync-all` — 동기화 체크리스트 전체 점검 |
+| `.claude/commands/agile.md` | `/agile` — 간단한 기능·UI 개선을 테스트·계획 오버헤드 없이 빠르게 구현하는 모드 |
 | `rules/guidelines.md` | 행동 가이드 (최우선, `CLAUDE.md` 최상단 링크) |
 | `rules/common/` | 범용 규칙 (주석·네이밍·Git·보안·에러·의존성·문서·테스트) |
 | `rules/backend/` | 백엔드·Docker 규칙 (설정·Docker·동기화) — 백엔드/배포 프로젝트만 |

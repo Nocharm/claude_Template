@@ -14,6 +14,7 @@ README.md                       # 프로젝트 placeholder (한 줄)
     setup-from-template.md      # 셋업 자동화 슬래시 커맨드
     sync.md                     # /sync — 변경 기반 동기화
     sync-all.md                 # /sync-all — 전체 체크리스트 점검
+    agile.md                    # /agile — 소규모 작업 고속 구현 모드
 docs/
   template/
     README.md                   # 이 템플릿의 README (다운스트림에서는 보통 삭제)
