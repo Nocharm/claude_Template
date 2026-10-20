@@ -56,7 +56,10 @@ DAY마다 동일한 패턴 — 추출 스키마가 이 구조를 그대로 따�
 | `Expression` | id, sentence_id?, text, meaning_ko, explanation_ko, origin (`reading_point` · `gabriel_point`) |
 | `Example` | id, expression_id, text_en, text_ko, origin (`book` · `ai`) |
 | `Relation` | from_id, to_id, type, note |
-| `ReviewCard` | expression_id, due_at, interval, ease — 간격 반복 |
+| `ReviewCard` | expression_id, due_at, interval, ease — 간격 반복 (interval ≥ 21일 = 마스터) |
+| `DailyLog` | date, reviews_done, new_done, goal_met, rest_used — 달력·스트릭의 원천 |
+| `XpEvent` | id, created_at, kind, points — XP 합계·레벨은 여기서 계산 |
+| `Sticker` | code, earned_at — 스티커북 |
 | `Comic` | id, expression_ids[], script, svg_panels[] |
 | `AudioCache` | text_hash, voice, file_path |
 

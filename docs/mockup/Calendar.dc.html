@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>도장 달력</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&amp;family=Gowun+Dodum&amp;family=Patrick+Hand&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F2925}a:hover{color:#155E3F}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FAF8F2; color: #1F2925; font-family: 'Gowun Dodum', system-ui, sans-serif">
+  <div style="padding: 52px 16px 0; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; gap: 4px">
+      <a href="Home.dc.html" aria-label="뒤로" style="width: 44px; height: 44px; display: flex; align-items: center; color: #1F2925"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+      <h1 style="margin: 0; font-family: 'Gamja Flower', cursive; font-size: 32px; font-weight: 400; line-height: 1.1">나의 학습 노트</h1>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 20px; background: #1F2925; color: #FFFFFF">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <div style="display: flex; align-items: baseline; gap: 8px"><span style="font-family: 'Patrick Hand', cursive; font-size: 32px; color: #FFE8A3">Lv.4</span><span style="font-family: 'Gamja Flower', cursive; font-size: 20px">꾸준한 메모러</span></div>
+        <div style="font-size: 12px; color: #C9D1CD">다음 Lv.5 · 형광펜 색 해금</div>
+      </div>
+      <div style="height: 10px; border-radius: 5px; background: #3B4641; overflow: hidden"><div style="width: 83%; height: 10px; border-radius: 5px; background: #CDEFDC"></div></div>
+      <div style="font-size: 12px; color: #C9D1CD">1,240 / 1,500 XP</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 4px; border-radius: 16px; background: #FBE1D3"><span style="font-family: 'Patrick Hand', cursive; font-size: 28px; line-height: 1; color: #9A3E12">7</span><span style="font-size: 12px; color: #6E2E0E">연속 일수</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 4px; border-radius: 16px; background: #CDEFDC"><span style="font-family: 'Patrick Hand', cursive; font-size: 28px; line-height: 1; color: #155E3F">38</span><span style="font-size: 12px; color: #155E3F">마스터 표현</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 4px; border-radius: 16px; background: #DCEEF7"><span style="font-family: 'Patrick Hand', cursive; font-size: 28px; line-height: 1; color: #1D4F6B">15</span><span style="font-size: 12px; color: #1D4F6B">이번 달 도장</span></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E6E1D6">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <button type="button" aria-label="이전 달" style="width: 36px; height: 36px; border: 0; background: transparent; color: #1F2925; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+        <div style="font-family: 'Gamja Flower', cursive; font-size: 24px">2026년 10월</div>
+        <button type="button" aria-label="다음 달" style="width: 36px; height: 36px; border: 0; background: transparent; color: #1F2925; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; font-size: 11px; color: #5D6762">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+        <sc-for list="{{cells}}" as="cell" hint-placeholder-count="35">
+          <div style="{{cell.style}}">
+            <sc-if value="{{cell.isStamp}}" hint-placeholder-val="{{ false }}">
+              <div style="width: 34px; height: 34px; border-radius: 50%; border: 2px solid #E8743B; background: #FFF4EC; color: #C9561F; display: flex; align-items: center; justify-content: center; transform: rotate(-10deg); font-family: 'Patrick Hand', cursive; font-size: 15px">{{cell.day}}</div>
+            </sc-if>
+            <sc-if value="{{cell.isPlain}}" hint-placeholder-val="{{ true }}">
+              <span>{{cell.day}}</span>
+            </sc-if>
+            <sc-if value="{{cell.hasDot}}" hint-placeholder-val="{{ false }}">
+              <span style="width: 5px; height: 5px; border-radius: 50%; background: #1E7F55"></span>
+            </sc-if>
+            <sc-if value="{{cell.isRest}}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 9px; color: #1D4F6B">쉼표</span>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #5D6762">
+        <span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 10px; height: 10px; border-radius: 50%; border: 2px solid #E8743B"></span>목표 달성</span>
+        <span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 5px; height: 5px; border-radius: 50%; background: #1E7F55"></span>조금 학습</span>
+        <span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #DCEEF7"></span>쉼표 사용 (주 1회)</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <div style="font-size: 14px; font-weight: 700">스티커북</div>
+        <div style="font-size: 12px; color: #5D6762">5 / 24</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 60px; height: 60px; border-radius: 50%; background: #FFE8A3; border: 3px solid #FFFFFF; box-shadow: 0 2px 6px rgba(31, 41, 37, 0.15); display: flex; align-items: center; justify-content: center; transform: rotate(-6deg); font-family: 'Patrick Hand', cursive; font-size: 18px; color: #9A3E12">DAY 3</div><span style="font-size: 11px; color: #3B4641">DAY 완주</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 60px; height: 60px; border-radius: 50%; background: #FBE1D3; border: 3px solid #FFFFFF; box-shadow: 0 2px 6px rgba(31, 41, 37, 0.15); display: flex; align-items: center; justify-content: center; transform: rotate(5deg); font-family: 'Gamja Flower', cursive; font-size: 18px; color: #9A3E12">7일!</div><span style="font-size: 11px; color: #3B4641">7일 연속</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 60px; height: 60px; border-radius: 50%; background: #DCEEF7; border: 3px solid #FFFFFF; box-shadow: 0 2px 6px rgba(31, 41, 37, 0.15); display: flex; align-items: center; justify-content: center; transform: rotate(-3deg); font-family: 'Gamja Flower', cursive; font-size: 16px; color: #1D4F6B">첫 웹툰</div><span style="font-size: 11px; color: #3B4641">웹툰 완독</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 60px; height: 60px; border-radius: 50%; background: #ECEAE4; border: 2px dashed #C9C2B3; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #5D6762">?</div><span style="font-size: 11px; color: #5D6762">30일 연속</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    // Oct 2026 starts on Thursday → 4 leading blanks; today = 20.
+    const stamped = [2, 3, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19];
+    const partial = [4, 10];
+    const rest = [11];
+    const base = 'height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 10px; font-size: 13px;';
+    const cells = [];
+    for (let i = 0; i < 4; i++) cells.push({ day: '', style: base, isPlain: true });
+    for (let d = 1; d <= 31; d++) {
+      const isStamp = stamped.includes(d);
+      const isRest = rest.includes(d);
+      let style = base + ' color: #1F2925;';
+      if (d > 20) style = base + ' color: #B5AEA0;';
+      if (d === 20) style = base + ' color: #1F2925; border: 2px dashed #1E7F55; font-weight: 700;';
+      if (isRest) style = base + ' color: #1D4F6B; background: #DCEEF7;';
+      cells.push({ day: String(d), style, isStamp, isPlain: !isStamp, hasDot: partial.includes(d), isRest });
+    }
+    return { cells };
+  }
+}
+</script>
+</body>
+</html>

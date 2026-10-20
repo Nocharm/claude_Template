@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모션 데모</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&amp;family=Gowun+Dodum&amp;family=Patrick+Hand&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E7F55}a:hover{color:#155E3F}
+@keyframes markA{from{background-size:0% 55%}to{background-size:100% 55%}}
+@keyframes markB{from{background-size:0% 55%}to{background-size:100% 55%}}
+@keyframes stampIn{0%{transform:scale(2.2) rotate(-28deg);opacity:0}60%{transform:scale(0.92) rotate(-12deg);opacity:1}100%{transform:scale(1) rotate(-12deg);opacity:1}}
+@keyframes xpUp{0%{transform:translateY(8px);opacity:0}25%{opacity:1}100%{transform:translateY(-40px);opacity:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
+</style>
+</helmet>
+<div style="width: 720px; height: 844px; box-sizing: border-box; padding: 40px 44px; background: #FAF8F2; color: #1F2925; font-family: 'Gowun Dodum', system-ui, sans-serif; display: flex; flex-direction: column; gap: 22px">
+  <div style="display: flex; justify-content: space-between; align-items: flex-end">
+    <h1 style="margin: 0; font-family: 'Gamja Flower', cursive; font-size: 40px; font-weight: 400; line-height: 1.1">모션 데모 — 눌러보세요</h1>
+    <div style="font-size: 12px; color: #5D6762">Play 모드에서 동작</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; flex: 1">
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E6E1D6">
+      <div style="font-size: 14px; font-weight: 700">① 문장 카드 뒤집기</div>
+      <button type="button" onClick="{{flip}}" aria-label="문장 카드 뒤집기" style="width: 100%; height: 220px; border: 0; padding: 0; background: transparent; perspective: 1000px; cursor: pointer; font: inherit; color: inherit; text-align: left">
+        <div style="position: relative; width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.4, 1.25); transform-style: preserve-3d; transform: {{cardTransform}}">
+          <div style="position: absolute; inset: 0; box-sizing: border-box; padding: 20px; border-radius: 20px; background: #FFFFFF; border: 2px solid #1F2925; box-shadow: 4px 4px 0 #1F2925; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; flex-direction: column; justify-content: space-between">
+            <div style="font-size: 12px; color: #5D6762">DAY 3 · 문장 5</div>
+            <div style="font-family: 'Patrick Hand', cursive; font-size: 26px; line-height: 1.3">But after a while, <span style="background: linear-gradient(transparent 50%, #CDEFDC 50%)">something didn't feel quite right.</span></div>
+            <div style="font-size: 12px; color: #5D6762">탭해서 뒤집기</div>
+          </div>
+          <div style="position: absolute; inset: 0; box-sizing: border-box; padding: 20px; border-radius: 20px; background: #FFE8A3; border: 2px solid #1F2925; box-shadow: 4px 4px 0 #1F2925; backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg); display: flex; flex-direction: column; gap: 10px">
+            <div style="font-family: 'Gamja Flower', cursive; font-size: 26px; line-height: 1.25">하지만 조금 지나고 나자 뭔가 이상한 느낌이 들었다.</div>
+            <div style="height: 1px; background: #E2C76E"></div>
+            <div style="font-size: 13px; line-height: 1.6; color: #3B4641"><b>didn't feel quite right</b> — 부정문의 quite는 '100% 맞지 않는' 느낌을 강조</div>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E6E1D6">
+      <div style="font-size: 14px; font-weight: 700">② 형광펜 긋기</div>
+      <div style="flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: repeating-linear-gradient(#FFFFFF 0px, #FFFFFF 43px, #E3EEF2 43px, #E3EEF2 44px); padding: 12px">
+        <div style="font-family: 'Patrick Hand', cursive; font-size: 30px; line-height: 44px; text-align: center">the sky was <span style="background-image: linear-gradient(#CDEFDC, #CDEFDC); background-repeat: no-repeat; background-position: 0 90%; background-size: 0% 55%; animation: {{markAnim}}">turning gray</span> fast</div>
+      </div>
+      <button type="button" onClick="{{replayMark}}" style="height: 44px; border-radius: 14px; border: 1px solid #1F2925; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 700; color: #1F2925">다시 긋기</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E6E1D6">
+      <div style="font-size: 14px; font-weight: 700">③ 오늘 목표 달성 — 도장 쾅</div>
+      <div style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: #FAF8F2; border: 1px dashed #C9C2B3">
+        <div style="font-family: 'Gamja Flower', cursive; font-size: 22px; color: #5D6762">10월 20일</div>
+        <sc-if value="{{stamped}}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; width: 112px; height: 112px; border-radius: 50%; border: 4px solid #E8743B; color: #C9561F; background: rgba(255, 255, 255, 0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Gamja Flower', cursive; line-height: 1; animation: stampIn 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.2) forwards"><span style="font-size: 30px">참 잘했어요</span><span style="font-size: 16px; padding-top: 4px">DAY 3 완료</span></div>
+          <div style="position: absolute; right: 24px; top: 20px; font-size: 18px; font-weight: 700; color: #1E7F55; animation: xpUp 1.2s ease-out 0.3s forwards; opacity: 0">+30 XP</div>
+        </sc-if>
+      </div>
+      <button type="button" onClick="{{toggleStamp}}" style="height: 44px; border-radius: 14px; border: 0; background: #1F2925; font: inherit; font-size: 14px; font-weight: 700; color: #FFFFFF">{{stampLabel}}</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E6E1D6">
+      <div style="font-size: 14px; font-weight: 700">④ 복습 카드 스와이프</div>
+      <div style="position: relative; flex: 1; border-radius: 16px; background: #FAF8F2; overflow: hidden; display: flex; align-items: center; justify-content: center">
+        <div style="position: absolute; width: 220px; height: 130px; border-radius: 18px; background: #DCEEF7; border: 2px solid #1F2925; transform: rotate(3deg)"></div>
+        <div style="position: relative; width: 220px; height: 130px; box-sizing: border-box; padding: 16px; border-radius: 18px; background: #FFFFFF; border: 2px solid #1F2925; box-shadow: 3px 3px 0 #1F2925; display: flex; flex-direction: column; justify-content: center; gap: 6px; transition: transform 0.4s ease, opacity 0.4s ease; transform: {{swipeTransform}}; opacity: {{swipeOpacity}}">
+          <div style="font-family: 'Patrick Hand', cursive; font-size: 28px">couldn't resist</div>
+          <div style="font-size: 13px; color: #5D6762">뜻이 떠오르나요?</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <button type="button" onClick="{{swipeLeft}}" style="height: 44px; border-radius: 14px; border: 1px solid #E8743B; background: #FBE1D3; font: inherit; font-size: 14px; font-weight: 700; color: #9A3E12">다시</button>
+        <button type="button" onClick="{{resetSwipe}}" style="height: 44px; border-radius: 14px; border: 1px solid #E6E1D6; background: #FFFFFF; font: inherit; font-size: 13px; color: #3B4641">되돌리기</button>
+        <button type="button" onClick="{{swipeRight}}" style="height: 44px; border-radius: 14px; border: 1px solid #1E7F55; background: #CDEFDC; font: inherit; font-size: 14px; font-weight: 700; color: #155E3F">알아요</button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":720,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { flipped: false, markRun: 0, stamped: false, swipe: null };
+  }
+  renderVals() {
+    const { flipped, markRun, stamped, swipe } = this.state;
+    const swipeTransforms = { left: 'translateX(-260px) rotate(-18deg)', right: 'translateX(260px) rotate(18deg)' };
+    return {
+      cardTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+      flip: () => this.setState({ flipped: !flipped }),
+      markAnim: (markRun % 2 === 0 ? 'markA' : 'markB') + ' 0.7s ease-out 0.2s forwards',
+      replayMark: () => this.setState({ markRun: markRun + 1 }),
+      stamped: stamped,
+      stampLabel: stamped ? '다시 해보기' : '오늘 목표 완료하기',
+      toggleStamp: () => this.setState({ stamped: !stamped }),
+      swipeTransform: swipeTransforms[swipe] ?? 'translateX(0) rotate(0deg)',
+      swipeOpacity: swipe ? 0 : 1,
+      swipeLeft: () => this.setState({ swipe: 'left' }),
+      swipeRight: () => this.setState({ swipe: 'right' }),
+      resetSwipe: () => this.setState({ swipe: null }),
+    };
+  }
+}
+</script>
+</body>
+</html>
