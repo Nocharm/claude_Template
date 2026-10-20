@@ -2,7 +2,7 @@
 
 회화책 PDF를 한 번 OCR·구조화해 표현 관계 그래프로 정리하고, iPhone(PWA)에서 퀴즈·응용·억양별 음성·실제 영상 링크·SVG 웹툰으로 외우는 개인 학습 앱.
 
-> 상태: 설계 단계 — 구현 전. 설계는 [`docs/DESIGN.md`](docs/DESIGN.md).
+> 상태: 설계 단계 — 구현 전. 설계는 [`docs/DESIGN.md`](docs/DESIGN.md), UI는 [`docs/UI.md`](docs/UI.md).
 
 ## 구성 (예정)
 

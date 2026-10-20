@@ -26,12 +26,23 @@ iPhone (PWA, React)  ──HTTPS──▶  FastAPI (단일 컨테이너, PWA 정
 ```
 PDF 업로드 → sha256 → 이미 처리된 책이면 skip
   → 페이지 이미지 분할
-  → [Pass 1] 페이지별 OCR + 추출 (Claude vision, structured output) → 페이지 JSON 저장
+  → [Pass 0] DAY 경계 탐지 (저해상도로 각 페이지의 "DAY n" 표지 확인)
+  → [Pass 1] DAY 단위 OCR + 추출 (Claude vision, structured output) → DAY JSON 저장
   → [Pass 2] 책 전체 표현 간 관계 추출 → DB 적재
 ```
 
 - 결과는 DB에 영구 저장 — 학습 중에는 PDF·OCR을 다시 쓰지 않는다.
-- 페이지 단위 저장으로 중간 실패 시 이어서 처리 (재시도 비용 최소화).
+- **DAY 단위로 자르는 이유:** 샘플 확인 결과 Reading Points 해설이 페이지를 넘어 이어진다 (p.41 → p.42). 페이지 단위면 문장·표현이 잘린다.
+- DAY 단위 저장으로 중간 실패 시 이어서 처리 (재시도 비용 최소화).
+
+### 책 구조 (샘플: 가브리엘의 잉글리시 다이어리, 495쪽)
+
+DAY마다 동일한 패턴 — 추출 스키마가 이 구조를 그대로 따른다.
+
+1. **일기 본문** — DAY 번호 · 제목 · 영어 본문 (손글씨체).
+2. **Reading Points** — 본문을 번호 문장으로 나눔. 문장마다 영어 + 핵심 표현 하이라이트 + 한글 해석.
+3. **표현 해설** — 하이라이트된 표현별 한글 설명 + e.g. 예문(영/한).
+4. **가브리엘 포인트** — 표현에 딸린 박스: "비슷한 표현" 또는 "다양한 쓰임" + 각자 e.g. 예문.
 - 긴급하지 않으므로 Batch API(50% 할인) 사용.
 - 다른 책도 같은 파이프라인으로 추가 — 데이터 모델이 `Book` 단위로 분리됨.
 
@@ -40,12 +51,23 @@ PDF 업로드 → sha256 → 이미 처리된 책이면 skip
 | 엔티티 | 주요 필드 |
 |---|---|
 | `Book` | id, title, file_hash, status |
-| `Unit` | id, book_id, order, title, page_range — 책의 과/문단 |
-| `Expression` | id, unit_id, text_en, meaning_ko, explanation_ko, examples[] |
-| `Relation` | from_id, to_id, type (`synonym` · `variation` · `same_situation` · `grammar_pattern` · `opposite`) |
+| `Day` | id, book_id, day_no, title, passage_en, page_range |
+| `Sentence` | id, day_id, no, text_en, text_ko — Reading Points 번호 문장 |
+| `Expression` | id, sentence_id?, text, meaning_ko, explanation_ko, origin (`reading_point` · `gabriel_point`) |
+| `Example` | id, expression_id, text_en, text_ko, origin (`book` · `ai`) |
+| `Relation` | from_id, to_id, type, note |
 | `ReviewCard` | expression_id, due_at, interval, ease — 간격 반복 |
 | `Comic` | id, expression_ids[], script, svg_panels[] |
 | `AudioCache` | text_hash, voice, file_path |
+
+`Relation.type` 출처:
+
+| type | UI 라벨 | 출처 |
+|---|---|---|
+| `similar` | 유사 | 가브리엘 포인트 "비슷한 표현" + Pass 2의 DAY 간 유사 표현 |
+| `sense` | 다른 쓰임 | 가브리엘 포인트 "다양한 쓰임" |
+| `contrast` | 대조 | 해설 속 비교 (예: come out vs go out) — Pass 2 |
+| `same_sentence` | 같은 문장 | 같은 `Sentence`의 표현끼리 — 자동 |
 
 ERD 뷰 = `Expression` 노드 + `Relation` 엣지 그래프. 표현 탭 → 연결 표현 펼침.
 
@@ -72,6 +94,10 @@ ERD 뷰 = `Expression` 노드 + `Relation` 엣지 그래프. 표현 탭 → 연�
 3. 억양별 TTS · 영상 링크
 4. SVG 웹툰
 
+## UI
+
+컨셉·화면 레이아웃은 [`docs/UI.md`](UI.md).
+
 ## 미결
 
-- 샘플 PDF 페이지로 추출 스키마 검증 필요.
+- 실제 PDF 1개 DAY(약 8쪽)로 Pass 1 추출 정확도 검증.

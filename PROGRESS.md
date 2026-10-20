@@ -5,6 +5,7 @@
 ## 2026-10-20 (feat/phrasebook-study)
 
 - **회화책 학습 앱 설계** — 월 $200 Claude 크레딧 활용 프로젝트로 선정. iPhone은 PWA(네이티브는 Mac·심사 비용 대비 이점 적음), 서버는 로컬 Docker + Tailscale(볼륨·`.env`만 옮기면 Fly.io 전환 가능), 웹툰은 Claude SVG(추가 비용 0·캐릭터 일관성), OCR은 책당 1회 처리 후 DB 영구 저장.
+- **샘플 반영 · UI 컨셉** — 샘플 페이지에서 해설이 페이지를 넘어 이어지는 걸 확인해 추출 단위를 페이지→DAY로 변경, 데이터 모델을 책 구조(Day·Sentence·Expression·Example·가브리엘 포인트 관계)에 맞춤. UI는 "형광펜 노트" 컨셉 + 6개 화면 목업(`docs/UI.md`).
 
 ## 2026-08-05
 
