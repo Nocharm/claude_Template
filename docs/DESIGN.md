@@ -1,6 +1,6 @@
 # Design — Phrasebook Study
 
-회화책 PDF를 1회 처리해 표현 그래프로 정리하고, iPhone PWA에서 퀴즈·응용·억양별 음성·실제 영상·SVG 웹툰으로 학습하는 개인용 앱.
+회화책 PDF를 1회 처리해 표현 그래프로 정리하고, iPhone PWA에서 퀴즈·응용·억양별 음성·실제 영상·웹툰으로 학습하는 개인용 앱.
 
 ## 목표와 범위
 
@@ -12,7 +12,8 @@
 
 ```
 iPhone (PWA, React)  ──HTTPS──▶  FastAPI (단일 컨테이너, PWA 정적 파일도 서빙)
-                                   ├─▶ Claude API — OCR·구조화·퀴즈·응용·웹툰
+                                   ├─▶ Claude API — OCR·구조화·응용·웹툰 콘티
+                                   ├─▶ Gemini — 웹툰 그림 (새벽 배치)
                                    ├─▶ Azure TTS — 억양별 음성
                                    └─ SQLite + 파일 캐시 (/data 볼륨)
 ```
@@ -82,7 +83,7 @@ ERD 뷰 = `Expression` 노드 + `Relation` 엣지 그래프. 표현 탭 → 연�
 | 응용 | 표현을 다른 상황으로 변형, 내 문장 첨삭 | — |
 | 억양별 읽기 | Azure TTS (en-US/GB/AU/IN 등) | `AudioCache` (같은 문장·음성은 1회 합성) |
 | 실제 영상 | YouGlish 억양별 검색 링크 (필요시 위젯 임베드) | — |
-| 10컷 웹툰 | Claude가 고정 캐릭터 3–4명으로 콘티 + SVG 패널 생성 | `Comic` |
+| 10컷 웹툰 | Claude 콘티 → Gemini가 글자 없는 컷 그림(캐릭터 기준 이미지로 일관성) → 앱이 말풍선 오버레이. 월·수·금 03:00 | 컷 PNG (`data/comics/`) |
 
 ## 모델·비용
 
@@ -95,7 +96,7 @@ ERD 뷰 = `Expression` 노드 + `Relation` 엣지 그래프. 표현 탭 → 연�
 1. 책 처리 파이프라인 + 표현 목록·ERD 그래프 뷰 + PWA 셸 ✅
 2. 퀴즈 · 간격 반복 · 응용 · 오늘 목표/XP/도장 달력 ✅ (스티커북은 이후)
 3. 억양별 TTS · 영상 링크 ✅
-4. SVG 웹툰
+4. 웹툰 (Claude 콘티 + Gemini 그림, 새벽 배치) ✅
 
 ## UI
 

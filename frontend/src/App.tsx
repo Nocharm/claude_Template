@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { TabBar } from "./components/TabBar";
+import { ComicPage } from "./pages/ComicPage";
+import { ComicsPage } from "./pages/ComicsPage";
 import { ExpressionPage } from "./pages/ExpressionPage";
 import { HomePage } from "./pages/HomePage";
 import { MapPage } from "./pages/MapPage";
@@ -18,6 +20,8 @@ export function App() {
         <Route path="/map" element={<MapPage />} />
         <Route path="/review" element={<ReviewPage />} />
         <Route path="/progress" element={<ProgressPage />} />
+        <Route path="/comics" element={<ComicsPage />} />
+        <Route path="/comics/:comicId" element={<ComicPage />} />
       </Routes>
       <TabBar />
     </BrowserRouter>

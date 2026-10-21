@@ -9,6 +9,8 @@ services:
       TIMEZONE: ${TIMEZONE:-Asia/Seoul}
       AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY}
       AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-koreacentral}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_IMAGE_MODEL: ${GEMINI_IMAGE_MODEL:-gemini-2.5-flash-image}
       DATA_DIR: /data
     volumes:
       # All state (SQLite + per-book caches). Copy this folder to move hosts.

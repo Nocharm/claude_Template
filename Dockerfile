@@ -25,6 +25,7 @@ WORKDIR /app/backend
 ENV DATA_DIR=/data \
     CLAUDE_MODEL=claude-opus-5-5 \
     TIMEZONE=Asia/Seoul \
-    AZURE_SPEECH_REGION=koreacentral
+    AZURE_SPEECH_REGION=koreacentral \
+    GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
 EXPOSE 8000
 CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

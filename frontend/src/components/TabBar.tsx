@@ -29,6 +29,10 @@ export function TabBar() {
       <NavLink to="/map" className={className} data-testid="TabBar-mapLink">
         <Icon name="map" />맵
       </NavLink>
+      <NavLink to="/comics" className={className} data-testid="TabBar-comicsLink">
+        <Icon name="comic" />
+        웹툰
+      </NavLink>
     </nav>
   );
 }

@@ -24,6 +24,7 @@ XP_CORRECT = 10
 XP_CORRECT_HARD = 5
 XP_FEEDBACK = 15
 XP_GOAL_BONUS = 30
+XP_COMIC_READ = 10
 
 LEVEL_NAMES = ["새 노트", "첫 페이지", "메모 습관", "꾸준한 메모러", "형광펜 장인", "노트 마스터"]
 

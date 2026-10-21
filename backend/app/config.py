@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     # Azure Speech resource; TTS is disabled (503) while the key is empty.
     azure_speech_key: str = ""
     azure_speech_region: str = "koreacentral"
+    # Gemini image model for webtoon panels; comics are disabled while the key is empty.
+    gemini_api_key: str = ""
+    gemini_image_model: str = "gemini-2.5-flash-image"
     # Holds the SQLite file and per-book caches; the only state to move when changing hosts.
     data_dir: Path = PROJECT_ROOT / "data"
 
@@ -32,3 +35,7 @@ class Settings(BaseSettings):
     @property
     def audio_dir(self) -> Path:
         return self.data_dir / "audio"
+
+    @property
+    def comics_dir(self) -> Path:
+        return self.data_dir / "comics"

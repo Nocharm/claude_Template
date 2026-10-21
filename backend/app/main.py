@@ -1,5 +1,6 @@
 """FastAPI app: book upload/ingest status, reading data, and the built PWA."""
 
+import asyncio
 import hashlib
 import logging
 import shutil
@@ -17,10 +18,20 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from app import comics_repository as store_comics
 from app import db, pipeline, repository
 from app.coach import ClaudeCoach, Coach
+from app.comics import ClaudeWriter, Writer
+from app.comics_api import (
+    ComicService,
+    Runner,
+    build_comics_router,
+    run_comic_scheduler,
+    run_in_thread,
+)
 from app.config import Settings
 from app.extraction import ClaudeExtractor, Extractor
+from app.gemini import GeminiPainter, Painter
 from app.study_api import build_study_router
 from app.tts import Accent, AzureTts, Synthesizer, TtsError, get_cached_audio
 
@@ -152,16 +163,42 @@ def build_azure_tts(settings: Settings) -> Synthesizer | None:
     return AzureTts(settings.azure_speech_key, settings.azure_speech_region)
 
 
+def build_claude_writer(settings: Settings) -> Writer:
+    return ClaudeWriter(build_client(settings), settings.claude_model)
+
+
+def build_gemini_painter(settings: Settings) -> Painter | None:
+    if not settings.gemini_api_key:
+        return None
+    return GeminiPainter(settings.gemini_api_key, settings.gemini_image_model)
+
+
 def create_app(
     settings: Settings | None = None,
     extractor_factory: Callable[[Settings], Extractor] = build_claude_extractor,
     coach_factory: Callable[[Settings], Coach] = build_claude_coach,
     clock: Callable[[], date] | None = None,
     tts_factory: Callable[[Settings], Synthesizer | None] = build_azure_tts,
+    writer_factory: Callable[[Settings], Writer] = build_claude_writer,
+    painter_factory: Callable[[Settings], Painter | None] = build_gemini_painter,
+    comic_runner: Runner = run_in_thread,
+    is_scheduler_enabled: bool = True,
 ) -> FastAPI:
     settings = settings or Settings()
+
+    def get_now() -> datetime:
+        return datetime.now(ZoneInfo(settings.timezone))
+
     # "Today" for streaks and due dates is the learner's local date, not the server's UTC date.
-    get_today = clock or (lambda: datetime.now(ZoneInfo(settings.timezone)).date())
+    get_today = clock or (lambda: get_now().date())
+    comic_service = ComicService(
+        lambda: db.connect(settings.db_path),
+        settings.comics_dir,
+        lambda: writer_factory(settings),
+        painter_factory(settings),
+        get_now,
+        comic_runner,
+    )
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -169,9 +206,15 @@ def create_app(
         db.init_db(settings.db_path)
         with closing(db.connect(settings.db_path)) as conn:
             interrupted = repository.mark_interrupted_books(conn)
+            interrupted += store_comics.mark_interrupted_comics(conn)
         if interrupted:
-            logger.warning("marked interrupted ingests as failed", extra={"count": interrupted})
+            logger.warning("marked interrupted jobs as failed", extra={"count": interrupted})
+        scheduler = None
+        if is_scheduler_enabled and comic_service.is_enabled:
+            scheduler = asyncio.create_task(run_comic_scheduler(comic_service, get_now))
         yield
+        if scheduler is not None:
+            scheduler.cancel()
 
     app = FastAPI(title="Phrasebook Study", lifespan=lifespan)
 
@@ -180,6 +223,7 @@ def create_app(
             yield conn
 
     app.include_router(build_study_router(get_conn, get_today, lambda: coach_factory(settings)))
+    app.include_router(build_comics_router(get_conn, comic_service, settings.comics_dir, get_today))
 
     def run_ingest(book_id: int, book_dir: Path) -> None:
         extractor = extractor_factory(settings)

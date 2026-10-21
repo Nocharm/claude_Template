@@ -135,6 +135,30 @@ export interface Feedback {
   xp_gained: number;
 }
 
+export interface ComicSummary {
+  id: number;
+  created_at: string;
+  status: "queued" | "writing" | "drawing" | "done" | "failed";
+  title_ko: string;
+  panels_done: number;
+  panel_count: number;
+  error: string | null;
+  cover_url: string | null;
+  is_read: boolean;
+}
+
+export interface ComicBubble {
+  speaker: "mina" | "jun" | "narration";
+  text_en: string;
+  text_ko: string;
+  highlight: string;
+}
+
+export interface ComicDetail extends ComicSummary {
+  expressions: { id: number; text: string; meaning_ko: string }[];
+  panels: { no: number; image_url: string | null; bubbles: ComicBubble[] }[];
+}
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -191,6 +215,12 @@ export const api = {
     request<Application[]>(`/api/expressions/${expressionId}/applications`, postJson({ scenario })),
   createFeedback: (expressionId: number, sentence: string) =>
     request<Feedback>(`/api/expressions/${expressionId}/feedback`, postJson({ sentence })),
+  listComics: () => request<ComicSummary[]>("/api/comics"),
+  createComic: () => request<ComicSummary>("/api/comics", { method: "POST" }),
+  retryComic: (id: number) => request<ComicSummary>(`/api/comics/${id}/retry`, { method: "POST" }),
+  getComic: (id: number) => request<ComicDetail>(`/api/comics/${id}`),
+  markComicRead: (id: number) =>
+    request<{ xp_gained: number }>(`/api/comics/${id}/read`, { method: "POST" }),
 };
 
 export const RELATION_LABELS: Record<RelationType, string> = {

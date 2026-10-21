@@ -100,6 +100,24 @@ CREATE TABLE IF NOT EXISTS applications (
     highlight TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+CREATE TABLE IF NOT EXISTS comics (
+    id INTEGER PRIMARY KEY,
+    created_at TEXT NOT NULL,
+    status TEXT NOT NULL,
+    title_ko TEXT NOT NULL DEFAULT '',
+    expression_ids TEXT NOT NULL,
+    error TEXT,
+    read_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS comic_panels (
+    id INTEGER PRIMARY KEY,
+    comic_id INTEGER NOT NULL REFERENCES comics(id) ON DELETE CASCADE,
+    no INTEGER NOT NULL,
+    script TEXT NOT NULL,
+    image_file TEXT,
+    UNIQUE (comic_id, no)
+);
 """
 
 
