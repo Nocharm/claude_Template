@@ -5,6 +5,7 @@ from pathlib import Path
 import pypdfium2 as pdfium
 import pytest
 
+from app.coach import AppliedSentence, SentenceFeedback
 from app.extraction import DayExtraction, ExpressionBrief, PageImage, PageInfo, Relation
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -103,3 +104,25 @@ def write_pdf(path: Path, pages: int) -> Path:
 @pytest.fixture
 def sample_pdf(tmp_path: Path) -> Path:
     return write_pdf(tmp_path / "book.pdf", len(PAGE_PLAN))
+
+
+class FakeCoach:
+    """Stands in for Claude coaching calls."""
+
+    def apply(self, text: str, meaning_ko: str, scenario: str) -> list[AppliedSentence]:
+        return [
+            AppliedSentence(
+                text_en=f"I spotted a typo before the meeting ({scenario}).",
+                text_ko="회의 전에 오타를 발견했어.",
+                highlight="spotted",
+            )
+        ]
+
+    def review(self, text: str, meaning_ko: str, sentence: str) -> SentenceFeedback:
+        uses = text.split()[0].lower() in sentence.lower()
+        return SentenceFeedback(
+            uses_expression=uses,
+            is_natural=True,
+            corrected_en=sentence,
+            explanation_ko="자연스러워요!",
+        )

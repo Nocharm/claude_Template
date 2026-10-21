@@ -6,6 +6,7 @@ services:
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-opus-5-5}
+      TIMEZONE: ${TIMEZONE:-Asia/Seoul}
       DATA_DIR: /data
     volumes:
       # All state (SQLite + per-book caches). Copy this folder to move hosts.

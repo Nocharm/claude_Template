@@ -7,7 +7,9 @@ import sqlite3
 import tempfile
 from collections.abc import AsyncIterator, Callable, Iterator
 from contextlib import asynccontextmanager, closing
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import anthropic
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, UploadFile
@@ -16,8 +18,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app import db, pipeline, repository
+from app.coach import ClaudeCoach, Coach
 from app.config import Settings
 from app.extraction import ClaudeExtractor, Extractor
+from app.study_api import build_study_router
 
 logger = logging.getLogger(__name__)
 
@@ -129,16 +133,27 @@ def configure_logging() -> None:
     app_logger.setLevel(logging.INFO)
 
 
+def build_client(settings: Settings) -> anthropic.Anthropic:
+    return anthropic.Anthropic(api_key=settings.anthropic_api_key or None, max_retries=4)
+
+
 def build_claude_extractor(settings: Settings) -> Extractor:
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key or None, max_retries=4)
-    return ClaudeExtractor(client, settings.claude_model)
+    return ClaudeExtractor(build_client(settings), settings.claude_model)
+
+
+def build_claude_coach(settings: Settings) -> Coach:
+    return ClaudeCoach(build_client(settings), settings.claude_model)
 
 
 def create_app(
     settings: Settings | None = None,
     extractor_factory: Callable[[Settings], Extractor] = build_claude_extractor,
+    coach_factory: Callable[[Settings], Coach] = build_claude_coach,
+    clock: Callable[[], date] | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
+    # "Today" for streaks and due dates is the learner's local date, not the server's UTC date.
+    get_today = clock or (lambda: datetime.now(ZoneInfo(settings.timezone)).date())
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -155,6 +170,8 @@ def create_app(
     def get_conn() -> Iterator[sqlite3.Connection]:
         with closing(db.connect(settings.db_path)) as conn:
             yield conn
+
+    app.include_router(build_study_router(get_conn, get_today, lambda: coach_factory(settings)))
 
     def run_ingest(book_id: int, book_dir: Path) -> None:
         extractor = extractor_factory(settings)

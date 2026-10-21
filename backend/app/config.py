@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     # Empty → the SDK falls back to its own credential resolution (env / ant profile).
     anthropic_api_key: str = ""
     claude_model: str = "claude-opus-5-5"
+    # IANA zone of the learner; decides when "today" rolls over for streaks and reviews.
+    timezone: str = "Asia/Seoul"
     # Holds the SQLite file and per-book caches; the only state to move when changing hosts.
     data_dir: Path = PROJECT_ROOT / "data"
 

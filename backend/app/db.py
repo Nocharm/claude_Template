@@ -64,6 +64,42 @@ CREATE TABLE IF NOT EXISTS relations (
     note TEXT NOT NULL DEFAULT '',
     UNIQUE (from_id, to_id, type)
 );
+
+CREATE TABLE IF NOT EXISTS review_cards (
+    expression_id INTEGER PRIMARY KEY REFERENCES expressions(id) ON DELETE CASCADE,
+    interval_days INTEGER NOT NULL,
+    ease REAL NOT NULL,
+    reps INTEGER NOT NULL,
+    lapses INTEGER NOT NULL,
+    due_date TEXT NOT NULL,
+    last_reviewed TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS daily_logs (
+    date TEXT PRIMARY KEY,
+    reviews_done INTEGER NOT NULL DEFAULT 0,
+    new_done INTEGER NOT NULL DEFAULT 0,
+    goal_met INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS xp_events (
+    id INTEGER PRIMARY KEY,
+    date TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    points INTEGER NOT NULL,
+    expression_id INTEGER REFERENCES expressions(id) ON DELETE SET NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS applications (
+    id INTEGER PRIMARY KEY,
+    expression_id INTEGER NOT NULL REFERENCES expressions(id) ON DELETE CASCADE,
+    scenario TEXT NOT NULL,
+    text_en TEXT NOT NULL,
+    text_ko TEXT NOT NULL,
+    highlight TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 """
 
 

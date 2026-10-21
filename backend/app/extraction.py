@@ -173,38 +173,52 @@ def build_image_content(images: list[PageImage]) -> list[dict]:
     return content
 
 
+def parse_structured[T: BaseModel](
+    client: anthropic.Anthropic,
+    model: str,
+    system: str,
+    content: list[dict],
+    output_format: type[T],
+    task: str,
+) -> T:
+    """One structured-output call; raises ExtractionError instead of returning partial data."""
+    response = client.beta.messages.parse(
+        model=model,
+        max_tokens=MAX_OUTPUT_TOKENS,
+        betas=[FALLBACK_BETA],
+        fallbacks="default",
+        system=system,
+        messages=[{"role": "user", "content": content}],
+        output_format=output_format,
+    )
+    logger.info(
+        "claude call finished",
+        extra={
+            "task": task,
+            "request_id": response._request_id,
+            "stop_reason": response.stop_reason,
+            "input_tokens": response.usage.input_tokens,
+            "output_tokens": response.usage.output_tokens,
+        },
+    )
+    if response.stop_reason == "refusal":
+        raise ExtractionError(f"{task}: request declined ({response.stop_details})")
+    if response.stop_reason == "max_tokens":
+        raise ExtractionError(f"{task}: output truncated at {MAX_OUTPUT_TOKENS} tokens")
+    if response.parsed_output is None:
+        raise ExtractionError(f"{task}: no structured output (stop={response.stop_reason})")
+    return response.parsed_output
+
+
 class ClaudeExtractor:
     def __init__(self, client: anthropic.Anthropic, model: str) -> None:
         self._client = client
         self._model = model
 
     def _parse[T: BaseModel](self, content: list[dict], output_format: type[T], task: str) -> T:
-        response = self._client.beta.messages.parse(
-            model=self._model,
-            max_tokens=MAX_OUTPUT_TOKENS,
-            betas=[FALLBACK_BETA],
-            fallbacks="default",
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": content}],
-            output_format=output_format,
+        return parse_structured(
+            self._client, self._model, SYSTEM_PROMPT, content, output_format, task
         )
-        logger.info(
-            "claude call finished",
-            extra={
-                "task": task,
-                "request_id": response._request_id,
-                "stop_reason": response.stop_reason,
-                "input_tokens": response.usage.input_tokens,
-                "output_tokens": response.usage.output_tokens,
-            },
-        )
-        if response.stop_reason == "refusal":
-            raise ExtractionError(f"{task}: request declined ({response.stop_details})")
-        if response.stop_reason == "max_tokens":
-            raise ExtractionError(f"{task}: output truncated at {MAX_OUTPUT_TOKENS} tokens")
-        if response.parsed_output is None:
-            raise ExtractionError(f"{task}: no structured output (stop={response.stop_reason})")
-        return response.parsed_output
 
     def classify_pages(self, images: list[PageImage]) -> list[PageInfo]:
         content = build_image_content(images) + [{"type": "text", "text": CLASSIFY_PROMPT}]
