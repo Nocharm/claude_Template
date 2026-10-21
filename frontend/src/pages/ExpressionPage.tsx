@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, RELATION_LABELS } from "../api";
 import { Icon } from "../components/Icon";
 import { PracticePanel } from "../components/PracticePanel";
+import { SpeakButton } from "../components/SpeakButton";
+import { SpeakControls } from "../components/SpeakControls";
 import { useApi } from "../lib/useApi";
 
 function buildYouglishUrl(text: string): string {
@@ -56,13 +58,26 @@ export function ExpressionPage() {
         <div style={{ fontSize: 17, fontWeight: 700 }}>{expression.meaning_ko}</div>
       </header>
 
+      <SpeakControls text={expression.text} />
+
       {(expression.explanation_ko || expression.examples.length > 0) && (
         <section className="card stack" data-testid="ExpressionPage-explanation">
           {expression.explanation_ko && <p style={{ margin: 0 }}>{expression.explanation_ko}</p>}
           {expression.examples.map((example, i) => (
-            <div key={i} style={{ borderTop: "1px solid #eceae4", paddingTop: 10 }}>
-              <div>{example.text_en}</div>
-              <div className="muted">{example.text_ko}</div>
+            <div
+              key={i}
+              className="spread"
+              style={{ borderTop: "1px solid #eceae4", paddingTop: 10, alignItems: "flex-start" }}
+            >
+              <div>
+                <div>{example.text_en}</div>
+                <div className="muted">{example.text_ko}</div>
+              </div>
+              <SpeakButton
+                text={example.text_en}
+                label="예문 듣기"
+                testId={`ExpressionPage-exampleSpeak-${i}`}
+              />
             </div>
           ))}
         </section>
@@ -70,7 +85,14 @@ export function ExpressionPage() {
 
       {expression.sentence && (
         <section className="card stack" style={{ background: "var(--butter)", border: 0 }}>
-          <span className="eyebrow">책 속 문장</span>
+          <div className="spread">
+            <span className="eyebrow">책 속 문장</span>
+            <SpeakButton
+              text={expression.sentence.text_en}
+              label="책 속 문장 듣기"
+              testId="ExpressionPage-sentenceSpeak"
+            />
+          </div>
           <span className="hand" style={{ fontSize: 21, lineHeight: 1.35 }}>
             {expression.sentence.text_en}
           </span>

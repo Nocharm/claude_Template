@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     claude_model: str = "claude-opus-5-5"
     # IANA zone of the learner; decides when "today" rolls over for streaks and reviews.
     timezone: str = "Asia/Seoul"
+    # Azure Speech resource; TTS is disabled (503) while the key is empty.
+    azure_speech_key: str = ""
+    azure_speech_region: str = "koreacentral"
     # Holds the SQLite file and per-book caches; the only state to move when changing hosts.
     data_dir: Path = PROJECT_ROOT / "data"
 
@@ -25,3 +28,7 @@ class Settings(BaseSettings):
     @property
     def books_dir(self) -> Path:
         return self.data_dir / "books"
+
+    @property
+    def audio_dir(self) -> Path:
+        return self.data_dir / "audio"

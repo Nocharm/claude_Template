@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 
 import type { CheckResult, Grade, QuizItem } from "../api";
+import { SpeakButton } from "./SpeakButton";
 
 interface QuizCardProps {
   item: QuizItem;
@@ -94,7 +95,18 @@ export function QuizCard({ item, onCheck, onGrade }: QuizCardProps) {
             className={`feedback ${result.is_correct ? "correct" : "wrong"}`}
             data-testid="QuizCard-feedback"
           >
-            <strong>{result.is_correct ? "정답이에요!" : "아쉬워요"}</strong>
+            <div className="spread">
+              <strong>{result.is_correct ? "정답이에요!" : "아쉬워요"}</strong>
+              <SpeakButton
+                text={
+                  item.kind === "cloze"
+                    ? item.prompt_en.replace("____", result.expected)
+                    : result.expected
+                }
+                label="정답 문장 듣기"
+                testId="QuizCard-answerSpeak"
+              />
+            </div>
             <span className="muted">
               <b className="hand" style={{ fontSize: 19, color: "var(--ink)" }}>
                 {result.expected}

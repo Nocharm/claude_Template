@@ -24,6 +24,7 @@ WORKDIR /app/backend
 # Fallbacks only — docker-compose passes the real values from .env.
 ENV DATA_DIR=/data \
     CLAUDE_MODEL=claude-opus-5-5 \
-    TIMEZONE=Asia/Seoul
+    TIMEZONE=Asia/Seoul \
+    AZURE_SPEECH_REGION=koreacentral
 EXPOSE 8000
 CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

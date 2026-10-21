@@ -12,7 +12,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import anthropic
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, UploadFile
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -22,6 +22,7 @@ from app.coach import ClaudeCoach, Coach
 from app.config import Settings
 from app.extraction import ClaudeExtractor, Extractor
 from app.study_api import build_study_router
+from app.tts import Accent, AzureTts, Synthesizer, TtsError, get_cached_audio
 
 logger = logging.getLogger(__name__)
 
@@ -145,11 +146,18 @@ def build_claude_coach(settings: Settings) -> Coach:
     return ClaudeCoach(build_client(settings), settings.claude_model)
 
 
+def build_azure_tts(settings: Settings) -> Synthesizer | None:
+    if not settings.azure_speech_key:
+        return None
+    return AzureTts(settings.azure_speech_key, settings.azure_speech_region)
+
+
 def create_app(
     settings: Settings | None = None,
     extractor_factory: Callable[[Settings], Extractor] = build_claude_extractor,
     coach_factory: Callable[[Settings], Coach] = build_claude_coach,
     clock: Callable[[], date] | None = None,
+    tts_factory: Callable[[Settings], Synthesizer | None] = build_azure_tts,
 ) -> FastAPI:
     settings = settings or Settings()
     # "Today" for streaks and due dates is the learner's local date, not the server's UTC date.
@@ -182,6 +190,24 @@ def create_app(
         if book is None:
             raise HTTPException(404, f"book {book_id} not found")
         return book
+
+    synthesizer = tts_factory(settings)
+
+    @app.get("/api/tts")
+    def speak(
+        text: str = Query(min_length=1, max_length=1000),
+        accent: Accent = "us",
+        slow: bool = False,
+    ) -> FileResponse:
+        if synthesizer is None:
+            raise HTTPException(503, "Azure TTS is not configured (set AZURE_SPEECH_KEY)")
+        try:
+            path = get_cached_audio(settings.audio_dir, synthesizer, text.strip(), accent, slow)
+        except TtsError as exc:
+            raise HTTPException(502, str(exc)) from exc
+        # Same query → same audio forever, so let Safari cache it too.
+        headers = {"Cache-Control": "public, max-age=31536000, immutable"}
+        return FileResponse(path, media_type="audio/mpeg", headers=headers)
 
     @app.get("/api/health")
     def health() -> dict[str, str]:

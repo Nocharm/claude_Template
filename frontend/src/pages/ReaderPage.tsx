@@ -5,6 +5,7 @@ import { api } from "../api";
 import { Highlighted } from "../components/Highlighted";
 import { Icon } from "../components/Icon";
 import { SentenceCard } from "../components/SentenceCard";
+import { SpeakButton } from "../components/SpeakButton";
 import { setLastDayId } from "../lib/storage";
 import { useApi } from "../lib/useApi";
 
@@ -48,7 +49,11 @@ export function ReaderPage() {
             문장 카드
           </button>
         </div>
-        <span style={{ width: 44 }} />
+        <SpeakButton
+          text={day.passage_en}
+          label="본문 전체 듣기"
+          testId="ReaderPage-passageSpeak"
+        />
       </div>
 
       <div className="row">

@@ -316,6 +316,35 @@ a.marker {
   gap: 8px;
 }
 
+.voice-chip {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 20px;
+  border: 1px solid var(--rule);
+  background: var(--card);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.voice-chip.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* --- Sentence flip card ---------------------------------------------------- */
 
 .flip {

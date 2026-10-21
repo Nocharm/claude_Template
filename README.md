@@ -2,7 +2,7 @@
 
 회화책 PDF를 한 번 OCR·구조화해 표현 관계 그래프로 정리하고, iPhone(PWA)에서 읽기·문장 카드·표현 맵으로 외우는 개인 학습 앱. 설계는 [`docs/DESIGN.md`](docs/DESIGN.md), UI는 [`docs/UI.md`](docs/UI.md).
 
-> 상태: 2단계 완료 — 책 처리, 읽기·표현 맵, 복습 퀴즈(간격 반복)·오늘 목표·XP·도장 달력, AI 응용 예문·첨삭. TTS·웹툰은 다음 단계.
+> 상태: 2단계 완료 — 책 처리, 읽기·표현 맵, 복습 퀴즈(간격 반복)·오늘 목표·XP·도장 달력, AI 응용 예문·첨삭, 억양별 음성(Azure TTS). 웹툰은 다음 단계.
 
 ## 구성
 
@@ -13,9 +13,13 @@
 ## 실행 (Docker)
 
 ```bash
-cp .env.example .env          # ANTHROPIC_API_KEY 입력
+cp .env.example .env          # ANTHROPIC_API_KEY, AZURE_SPEECH_KEY 입력
 docker compose up -d --build  # http://localhost:8000
 ```
+
+### Azure 음성 키 (TTS)
+
+Azure Portal → **Speech service** 리소스 생성(가격 책정 계층 **Free F0** — 월 50만 자 무료) → **키 및 엔드포인트**에서 키 1개와 지역(예: `koreacentral`)을 `.env`의 `AZURE_SPEECH_KEY` / `AZURE_SPEECH_REGION`에 넣는다. 키가 없으면 앱은 그대로 쓰고 듣기 버튼만 오류를 낸다.
 
 ### iPhone에서 접속 (Tailscale)
 
@@ -48,4 +52,4 @@ npm run build      # dist/ → backend가 함께 서빙
 
 ## 비용
 
-Claude Opus 5.5 기준 책 1권(약 500쪽) 처리 약 $5–15, 1회. 같은 PDF를 다시 올리면 기존 결과를 돌려주고 재처리하지 않는다. 복습 퀴즈는 책 데이터로 만들어 Claude를 쓰지 않고, 응용 예문·첨삭만 호출당 1센트 안팎을 쓴다.
+Claude Opus 5.5 기준 책 1권(약 500쪽) 처리 약 $5–15, 1회. 같은 PDF를 다시 올리면 기존 결과를 돌려주고 재처리하지 않는다. 복습 퀴즈는 책 데이터로 만들어 Claude를 쓰지 않고, 응용 예문·첨삭만 호출당 1센트 안팎을 쓴다. 음성은 문장·억양·속도 조합마다 한 번만 합성해 `data/audio/`에 저장하므로 Azure 무료 한도 안에서 쓸 수 있다.

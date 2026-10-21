@@ -18,3 +18,33 @@ export function setLastDayId(dayId: number): void {
     // Storage blocked: "continue reading" just won't be remembered on this device.
   }
 }
+
+const VOICE_KEY = "voicePrefs";
+
+export type Accent = "us" | "uk" | "au" | "in";
+
+export interface VoicePrefs {
+  accent: Accent;
+  isSlow: boolean;
+}
+
+const DEFAULT_VOICE: VoicePrefs = { accent: "us", isSlow: false };
+
+export function getVoicePrefs(): VoicePrefs {
+  try {
+    const value = localStorage.getItem(VOICE_KEY);
+    return value
+      ? { ...DEFAULT_VOICE, ...(JSON.parse(value) as Partial<VoicePrefs>) }
+      : DEFAULT_VOICE;
+  } catch {
+    return DEFAULT_VOICE;
+  }
+}
+
+export function setVoicePrefs(prefs: VoicePrefs): void {
+  try {
+    localStorage.setItem(VOICE_KEY, JSON.stringify(prefs));
+  } catch {
+    // Storage blocked: the chosen accent just resets next visit.
+  }
+}
