@@ -4,15 +4,17 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=PROJECT_ROOT / ".env", extra="ignore")
 
     # Empty → the SDK falls back to its own credential resolution (env / ant profile).
     anthropic_api_key: str = ""
     claude_model: str = "claude-opus-5-5"
     # Holds the SQLite file and per-book caches; the only state to move when changing hosts.
-    data_dir: Path = Path("data")
+    data_dir: Path = PROJECT_ROOT / "data"
 
     @property
     def db_path(self) -> Path:

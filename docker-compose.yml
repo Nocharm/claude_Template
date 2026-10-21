@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-opus-5-5}
+      DATA_DIR: /data
+    volumes:
+      # All state (SQLite + per-book caches). Copy this folder to move hosts.
+      - ./data:/data
+    restart: unless-stopped

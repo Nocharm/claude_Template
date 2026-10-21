@@ -16,7 +16,7 @@
 
 - 손글씨 스택 `'Patrick Hand', 'Gamja Flower', cursive` — 영문은 Patrick Hand, 한글은 자동으로 Gamja Flower (Google Fonts).
 - 시스템 스택 `system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif` — 다운로드 없음, 가독성 최상.
-- Gmarket Sans는 Google Fonts에 없어 woff2를 앱에 직접 포함 (무료 상업 이용 가능 폰트).
+- Gmarket Sans는 Google Fonts에 없어 jsDelivr(눈누) CDN에서 로드 — 로드 실패 시 시스템 서체로 대체.
 - 본문 15px, 보조 13px. 손글씨는 시각 크기가 작아 시스템 서체보다 4–6px 크게.
 - 목업은 Gmarket Sans 대신 손글씨 제목으로 그려져 있다 — 구현이 이 표를 따른다.
 
