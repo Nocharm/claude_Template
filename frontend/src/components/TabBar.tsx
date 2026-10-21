@@ -13,9 +13,18 @@ export function TabBar() {
       <NavLink to="/" end className={className} data-testid="TabBar-homeLink">
         <Icon name="home" />홈
       </NavLink>
-      <NavLink to={readTo} className={className} data-testid="TabBar-readLink">
+      <NavLink
+        to={readTo}
+        // Without a last-read DAY this points at home; don't double-highlight the home tab.
+        className={lastDayId ? className : undefined}
+        data-testid="TabBar-readLink"
+      >
         <Icon name="book" />
         읽기
+      </NavLink>
+      <NavLink to="/review" className={className} data-testid="TabBar-reviewLink">
+        <Icon name="check" />
+        복습
       </NavLink>
       <NavLink to="/map" className={className} data-testid="TabBar-mapLink">
         <Icon name="map" />맵

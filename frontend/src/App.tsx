@@ -4,7 +4,9 @@ import { TabBar } from "./components/TabBar";
 import { ExpressionPage } from "./pages/ExpressionPage";
 import { HomePage } from "./pages/HomePage";
 import { MapPage } from "./pages/MapPage";
+import { ProgressPage } from "./pages/ProgressPage";
 import { ReaderPage } from "./pages/ReaderPage";
+import { ReviewPage } from "./pages/ReviewPage";
 
 export function App() {
   return (
@@ -14,6 +16,8 @@ export function App() {
         <Route path="/days/:dayId" element={<ReaderPage />} />
         <Route path="/expressions/:expressionId" element={<ExpressionPage />} />
         <Route path="/map" element={<MapPage />} />
+        <Route path="/review" element={<ReviewPage />} />
+        <Route path="/progress" element={<ProgressPage />} />
       </Routes>
       <TabBar />
     </BrowserRouter>

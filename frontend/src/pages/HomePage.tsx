@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { api, type Book } from "../api";
 import { DayList } from "../components/DayList";
+import { GoalCard } from "../components/GoalCard";
 import { getLastDayId } from "../lib/storage";
 import { useApi } from "../lib/useApi";
 
@@ -27,6 +28,7 @@ export function HomePage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const { data: books, error } = useApi(api.listBooks, [refreshKey]);
+  const { data: progress } = useApi(api.getProgress, []);
   const lastDayId = getLastDayId();
   const { data: lastDay } = useApi(
     () => (lastDayId ? api.getDay(lastDayId) : Promise.resolve(null)),
@@ -73,10 +75,19 @@ export function HomePage() {
 
   return (
     <main className="page">
-      <header>
-        <div className="muted">{today}</div>
-        <h1 className="title">오늘의 노트</h1>
+      <header className="spread" style={{ alignItems: "flex-end" }}>
+        <div>
+          <div className="muted">{today}</div>
+          <h1 className="title">오늘의 노트</h1>
+        </div>
+        {progress && (
+          <Link to="/progress" className="pill" data-testid="HomePage-progressLink">
+            {progress.streak_days}일 연속 · Lv.{progress.level}
+          </Link>
+        )}
       </header>
+
+      {progress && <GoalCard progress={progress} />}
 
       {lastDay && (
         <Link

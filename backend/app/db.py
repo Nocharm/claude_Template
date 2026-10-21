@@ -104,8 +104,10 @@ CREATE TABLE IF NOT EXISTS applications (
 
 
 def connect(db_path: Path) -> sqlite3.Connection:
-    """Open a connection; one per request/thread since sqlite3 objects aren't thread-safe."""
-    conn = sqlite3.connect(db_path)
+    """Open a connection owned by one request or job; never share it concurrently."""
+    # FastAPI opens a dependency in one worker thread and runs the endpoint in another,
+    # so the same-thread check must be off; each connection is still used by one caller.
+    conn = sqlite3.connect(db_path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn

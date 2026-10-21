@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { api, RELATION_LABELS } from "../api";
 import { Icon } from "../components/Icon";
+import { PracticePanel } from "../components/PracticePanel";
 import { useApi } from "../lib/useApi";
 
 function buildYouglishUrl(text: string): string {
@@ -95,6 +96,8 @@ export function ExpressionPage() {
           </div>
         </section>
       )}
+
+      <PracticePanel expressionId={expression.id} />
 
       <a
         href={buildYouglishUrl(expression.text)}

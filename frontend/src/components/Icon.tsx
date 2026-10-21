@@ -7,6 +7,8 @@ const PATHS = {
   back: "M15 5l-7 7 7 7",
   forward: "M9 5l7 7-7 7",
   play: "M8 5l11 7-11 7z",
+  check:
+    "M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM8.5 12l2.5 2.5 4.5-5",
 } as const;
 
 interface IconProps {

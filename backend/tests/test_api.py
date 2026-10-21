@@ -1,5 +1,6 @@
 """API tests: upload → background ingest (fake extractor) → reading endpoints."""
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -82,3 +83,14 @@ def test_retry_only_allowed_for_failed_books(client: TestClient, sample_pdf: Pat
     response = client.post(f"/api/books/{book_id}/retry")
 
     assert response.status_code == 409
+
+
+def test_concurrent_requests_share_no_connection_errors(
+    client: TestClient, sample_pdf: Path
+) -> None:
+    # Regression: dependency and endpoint run on different threadpool threads.
+    upload(client, sample_pdf)
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        statuses = list(pool.map(lambda _: client.get("/api/books").status_code, range(40)))
+
+    assert set(statuses) == {200}

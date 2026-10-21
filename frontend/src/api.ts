@@ -68,6 +68,73 @@ export interface ExpressionDetail {
   related: Related[];
 }
 
+export interface Daily {
+  date: string;
+  answered: number;
+  goal: number;
+  goal_met: boolean;
+  xp_today: number;
+}
+
+export interface QuizItem {
+  expression_id: number;
+  day_no: number;
+  kind: "cloze" | "ko_to_en";
+  prompt_ko: string;
+  prompt_en: string;
+  hint: string;
+  is_new: boolean;
+}
+
+export interface CheckResult {
+  is_correct: boolean;
+  expected: string;
+  meaning_ko: string;
+}
+
+export type Grade = "again" | "hard" | "good";
+
+export interface GradeResult {
+  xp_gained: number;
+  next_due: string;
+  goal_just_met: boolean;
+  today: Daily;
+}
+
+export type DayStatus = "met" | "partial" | "rest" | "none" | "future";
+
+export interface Progress {
+  today: Daily;
+  streak_days: number;
+  level: number;
+  level_name: string;
+  xp_total: number;
+  xp_into_level: number;
+  xp_for_next: number;
+  mastered: number;
+  month: string;
+  calendar: { date: string; status: DayStatus }[];
+}
+
+export type Scenario = "work" | "travel" | "daily" | "romance";
+
+export interface Application {
+  id: number;
+  scenario: Scenario;
+  scenario_label: string;
+  text_en: string;
+  text_ko: string;
+  highlight: string;
+}
+
+export interface Feedback {
+  uses_expression: boolean;
+  is_natural: boolean;
+  corrected_en: string;
+  explanation_ko: string;
+  xp_gained: number;
+}
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -76,6 +143,14 @@ export class ApiError extends Error {
   ) {
     super(`${status} ${path}: ${detail}`);
   }
+}
+
+function postJson(body: unknown): RequestInit {
+  return {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  };
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -103,6 +178,19 @@ export const api = {
   listDays: (bookId: number) => request<DaySummary[]>(`/api/books/${bookId}/days`),
   getDay: (id: number) => request<DayDetail>(`/api/days/${id}`),
   getExpression: (id: number) => request<ExpressionDetail>(`/api/expressions/${id}`),
+  getQueue: () => request<{ items: QuizItem[]; today: Daily }>("/api/study/queue"),
+  checkAnswer: (expressionId: number, answer: string) =>
+    request<CheckResult>(`/api/study/${expressionId}/check`, postJson({ answer })),
+  gradeCard: (expressionId: number, grade: Grade) =>
+    request<GradeResult>(`/api/study/${expressionId}/grade`, postJson({ grade })),
+  getProgress: (month?: string) =>
+    request<Progress>(`/api/study/progress${month ? `?month=${month}` : ""}`),
+  listApplications: (expressionId: number) =>
+    request<Application[]>(`/api/expressions/${expressionId}/applications`),
+  createApplications: (expressionId: number, scenario: Scenario) =>
+    request<Application[]>(`/api/expressions/${expressionId}/applications`, postJson({ scenario })),
+  createFeedback: (expressionId: number, sentence: string) =>
+    request<Feedback>(`/api/expressions/${expressionId}/feedback`, postJson({ sentence })),
 };
 
 export const RELATION_LABELS: Record<RelationType, string> = {
