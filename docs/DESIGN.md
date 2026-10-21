@@ -43,7 +43,7 @@ DAY마다 동일한 패턴 — 추출 스키마가 이 구조를 그대로 따�
 2. **Reading Points** — 본문을 번호 문장으로 나눔. 문장마다 영어 + 핵심 표현 하이라이트 + 한글 해석.
 3. **표현 해설** — 하이라이트된 표현별 한글 설명 + e.g. 예문(영/한).
 4. **가브리엘 포인트** — 표현에 딸린 박스: "비슷한 표현" 또는 "다양한 쓰임" + 각자 e.g. 예문.
-- 긴급하지 않으므로 Batch API(50% 할인) 사용.
+- DAY 추출은 동기 호출 4개 병렬 (Batch API 50% 할인은 책당 ~$5 절감 대비 폴링 복잡도가 커서 보류).
 - 다른 책도 같은 파이프라인으로 추가 — 데이터 모델이 `Book` 단위로 분리됨.
 
 ## 데이터 모델 (ERD 뷰의 원천)
@@ -53,7 +53,7 @@ DAY마다 동일한 패턴 — 추출 스키마가 이 구조를 그대로 따�
 | `Book` | id, title, file_hash, status |
 | `Day` | id, book_id, day_no, title, passage_en, page_range |
 | `Sentence` | id, day_id, no, text_en, text_ko — Reading Points 번호 문장 |
-| `Expression` | id, sentence_id?, text, meaning_ko, explanation_ko, origin (`reading_point` · `gabriel_point`) |
+| `Expression` | id, sentence_id?, parent_id?, text, highlight, meaning_ko, explanation_ko, origin (`reading_point` · `tip_box`) |
 | `Example` | id, expression_id, text_en, text_ko, origin (`book` · `ai`) |
 | `Relation` | from_id, to_id, type, note |
 | `ReviewCard` | expression_id, due_at, interval, ease — 간격 반복 (interval ≥ 21일 = 마스터) |

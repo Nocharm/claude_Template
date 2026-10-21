@@ -1,0 +1,109 @@
+{
+ "day_no": 3,
+ "title": "Scooter Ride Turned Rainy Adventure",
+ "passage_en": "My husband and I have always been thrill-seekers, so when we were out for a walk and spotted some scooters, we couldn't resist.\n\"How do you feel about going on a little adventure?\" my husband asked.\n\"I'm down! Let's go!\"\nAt first, it was fantastic—the wind in our hair, not a care in the world. But after a while, something didn't feel quite right. The streets were suddenly empty, and the sky was turning gray fast.\n\"Did you check the weather forecast before we came out?\" I asked.\n\"Pretty sure it was supposed to be sunny all day!\"\nWe ended up riding our scooters back in the rain, completely soaked. But I can't complain—it really was an adventure!",
+ "sentences": [
+  {
+   "no": 1,
+   "text_en": "My husband and I have always been thrill-seekers, so when we were out for a walk and spotted some scooters, we couldn't resist.",
+   "text_ko": "남편과 나는 항상 짜릿한 경험을 좋아한다. 그래서 산책을 하다가 스쿠터를 발견했을 때, 그냥 지나칠 수 없었다.",
+   "expressions": [
+    {
+     "text": "have always been ~",
+     "highlight": "have always been",
+     "meaning_ko": "항상 ~해 왔다",
+     "explanation_ko": "have always been ~은 '항상 ~해 왔다'라는 뜻으로 오랫동안 변하지 않은 성향이나 습관을 나타낼 때 자주 사용됩니다.",
+     "examples": [{"text_en": "I have always been a coffee lover.", "text_ko": "나는 항상 커피를 엄청 좋아했다."}],
+     "tip_boxes": []
+    },
+    {
+     "text": "thrill-seeker",
+     "highlight": "thrill-seekers",
+     "meaning_ko": "스릴을 즐기는 사람, 모험을 좋아하는 사람",
+     "explanation_ko": "thrill-seeker는 '스릴을 즐기는 사람, 모험을 좋아하는 사람'이라는 뜻으로 모험을 즐기고 새로운 도전을 좋아하는 사람을 의미합니다.",
+     "examples": [{"text_en": "She's a real thrill-seeker—she loves skydiving and bungee jumping!", "text_ko": "그녀는 진짜 모험을 즐기는 사람이다. 스카이다이빙이랑 번지 점프를 좋아한다!"}],
+     "tip_boxes": []
+    },
+    {
+     "text": "spot",
+     "highlight": "spotted",
+     "meaning_ko": "(우연히) 발견하다, 보다",
+     "explanation_ko": "spot은 '(우연히) 발견하다, 보다'라는 뜻으로 길을 가는 도중이나 사람들 사이에서, 또는 멀리서 뭔가를 눈치채거나 발견할 때 사용합니다.",
+     "examples": [{"text_en": "I spotted a cute little café while walking around downtown.", "text_ko": "시내를 돌아다니다가 귀엽고 아담한 카페를 발견했다."}],
+     "tip_boxes": [
+      {
+       "kind": "similar",
+       "title_ko": "원어민들이 자주 쓰는 비슷한 표현",
+       "items": [
+        {"text": "notice", "meaning_ko": "알아채다 (뭔가가 변화했거나 다르다는 걸 인지했을 때)", "examples": [{"text_en": "Did you notice the mistake in the report?", "text_ko": "보고서에서 실수한 거 알아챘어?"}]},
+        {"text": "catch sight of", "meaning_ko": "~을 흘끗[언뜻] 보다 (빠르게 지나가는 차, 새, 사람 등을 잠깐 보았을 때)", "examples": [{"text_en": "I caught sight of a deer while hiking.", "text_ko": "하이킹하면서 사슴을 잠깐 봤다."}]}
+       ]
+      }
+     ]
+    },
+    {
+     "text": "couldn't resist",
+     "highlight": "couldn't resist",
+     "meaning_ko": "참을 수 없었다, 유혹을 뿌리칠 수 없었다",
+     "explanation_ko": "couldn't resist는 '참을 수 없었다, 유혹을 뿌리칠 수 없었다'라는 의미의 표현입니다. 보통 너무 매력적이거나 좋아하는 것이 앞에 있어서 결국 참지 못하고 하게 되었을 때 사용됩니다.",
+     "examples": [],
+     "tip_boxes": []
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "text_en": "But after a while, something didn't feel quite right.",
+   "text_ko": "하지만 조금 지나고 나자 뭔가 이상한 느낌이 들었다.",
+   "expressions": [
+    {
+     "text": "Something didn't feel quite right.",
+     "highlight": "something didn't feel quite right",
+     "meaning_ko": "뭔가 이상한 느낌이 들었다.",
+     "explanation_ko": "Something didn't feel quite right.은 '뭔가 이상한 느낌이 들었다.'라는 뜻입니다. 부정문에서 quite는 뭔가가 100% 맞지 않는 느낌을 강조하는 역할을 합니다.",
+     "examples": [{"text_en": "As soon as I entered the house, something didn't feel quite right.", "text_ko": "집에 들어서자마자 뭔가 이상한 느낌이 들었다."}],
+     "tip_boxes": []
+    }
+   ]
+  },
+  {
+   "no": 6,
+   "text_en": "The streets were suddenly empty, and the sky was turning gray fast.",
+   "text_ko": "거리는 갑자기 텅 비었고, 하늘은 빠르게 회색빛으로 변하고 있었다.",
+   "expressions": [
+    {
+     "text": "The sky was turning gray.",
+     "highlight": "the sky was turning gray",
+     "meaning_ko": "하늘이 점점 흐려지고 있었다.",
+     "explanation_ko": "The sky was turning gray.는 '하늘이 회색빛으로 변하고 있었다.', 즉 '하늘이 점점 흐려지고 있었다.'라는 의미입니다.",
+     "examples": [{"text_en": "The sky turned gray before the storm.", "text_ko": "폭풍이 오기 전에 하늘이 흐려졌다."}],
+     "tip_boxes": []
+    }
+   ]
+  },
+  {
+   "no": 7,
+   "text_en": "\"Did you check the weather forecast before we came out?\" I asked.",
+   "text_ko": "\"나오기 전에 일기 예보 확인했어?\" 내가 물었다.",
+   "expressions": [
+    {
+     "text": "come out",
+     "highlight": "came out",
+     "meaning_ko": "나오다",
+     "explanation_ko": "come out은 '나오다'라는 의미입니다. come out과 go out을 비교하면, come은 말하는 사람이 있는 방향으로의 움직임을 나타내고, go는 말하는 사람으로부터 멀어지는 움직임을 나타냅니다. 따라서 아직 안 나간 상태에서 \"나가기 전에 날씨 확인하자.\"라고 할 때는 \"Let's check the weather before we go out.\"이라고 합니다. 여기서는 이미 밖에 있는 상황에서 과거를 회상하면서 하는 말이므로 come out을 썼습니다.",
+     "examples": [{"text_en": "I couldn't find my dog, but it came out from under my bed.", "text_ko": "내 강아지가 어디 갔는지 못 찾았는데, 내 침대 밑에서 나왔다."}],
+     "tip_boxes": [
+      {
+       "kind": "sense",
+       "title_ko": "come out이 사용되는 다양한 상황",
+       "items": [
+        {"text": "come out", "meaning_ko": "(누군가가 어딘가에서) 나오다, 나타나다", "examples": [{"text_en": "She came out of the store with a big smile.", "text_ko": "그녀는 환한 미소를 지으며 가게에서 나왔다."}]},
+        {"text": "come out", "meaning_ko": "(비밀이나 정보가) 밝혀지다, 드러나다", "examples": []}
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

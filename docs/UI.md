@@ -6,16 +6,19 @@
 
 줄 노트에 일기를 읽고, 외울 표현은 형광펜이 그어지듯 나타난다. 문장 카드는 뒤집으면 해석이 나오고, 매일 목표를 채우면 달력에 도장이 찍힌다. 손글씨는 **제목 · 표현 · 스티커**에만, 오래 읽는 해설과 버튼은 둥글고 눈이 편한 고딕으로 쓴다. 책의 다이어리 감성은 살리되 책 디자인을 복제하지 않는다.
 
-## 서체 (Google Fonts)
+## 서체 — 3계열
 
-| 서체 | 역할 | 쓰는 곳 |
+| 계열 | 서체 | 쓰는 곳 |
 |---|---|---|
-| **Gamja Flower** | 한글 손글씨 | 화면 제목, 스티커, 칭찬·목표 문구 |
-| **Patrick Hand** | 영문 손글씨 | 일기 본문, 표현, 카드 앞면, 숫자 강조 |
-| **Gowun Dodum** | 본문 고딕 | 해설, 해석, 버튼, 라벨 |
+| 손글씨 | **Patrick Hand** (영문) + **Gamja Flower** (한글) | 일기 본문, 표현, 카드 앞면, 스티커, 칭찬 문구 |
+| 시스템 | iPhone 기본 (SF Pro + Apple SD Gothic Neo) | 해설, 해석, 버튼, 라벨 — 오래 읽는 글 |
+| 강조 | **Gmarket Sans** (Bold/Medium) | 화면 제목, 숫자(XP·연속일·레벨), 배지 |
 
-- 손글씨 스택 `'Patrick Hand', 'Gamja Flower', cursive` — 영문은 Patrick Hand, 한글은 자동으로 Gamja Flower.
-- 본문 15px, 보조 13px. 손글씨는 시각 크기가 작아 고딕보다 4–6px 크게.
+- 손글씨 스택 `'Patrick Hand', 'Gamja Flower', cursive` — 영문은 Patrick Hand, 한글은 자동으로 Gamja Flower (Google Fonts).
+- 시스템 스택 `system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif` — 다운로드 없음, 가독성 최상.
+- Gmarket Sans는 Google Fonts에 없어 woff2를 앱에 직접 포함 (무료 상업 이용 가능 폰트).
+- 본문 15px, 보조 13px. 손글씨는 시각 크기가 작아 시스템 서체보다 4–6px 크게.
+- 목업은 Gmarket Sans 대신 손글씨 제목으로 그려져 있다 — 구현이 이 표를 따른다.
 
 ## 색
 

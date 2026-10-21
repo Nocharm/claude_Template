@@ -1,0 +1,8 @@
+anthropic==1.17.0
+fastapi==0.156.4
+pillow==13.0.0
+pydantic-settings==2.16.1
+# Renders scanned PDF pages to images without system packages (poppler/ghostscript).
+pypdfium2==5.14.0
+python-multipart==0.0.32
+uvicorn[standard]==0.54.0
