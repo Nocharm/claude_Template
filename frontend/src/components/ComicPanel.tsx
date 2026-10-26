@@ -11,6 +11,11 @@ interface ComicPanelProps {
 
 /** Text-free Gemini art with HTML speech bubbles on top (tap a bubble to hear it). */
 export function ComicPanel({ no, imageUrl, bubbles, isKoreanShown, onSpeak }: ComicPanelProps) {
+  // First speaker in the panel talks from the left, everyone else from the right.
+  const firstSpeaker = bubbles.find((b) => b.speaker !== "narration")?.speaker;
+  const sideOf = (speaker: string) =>
+    speaker === "narration" ? "narration" : speaker === firstSpeaker ? "left" : "right";
+
   return (
     <figure className="comic-panel" data-testid={`ComicPanel-panel-${no}`}>
       {imageUrl ? (
@@ -23,7 +28,7 @@ export function ComicPanel({ no, imageUrl, bubbles, isKoreanShown, onSpeak }: Co
           <button
             key={i}
             type="button"
-            className={`comic-bubble ${bubble.speaker}`}
+            className={`comic-bubble ${sideOf(bubble.speaker)}`}
             onClick={() => onSpeak(bubble.text_en)}
             aria-label={`${bubble.text_en} 듣기`}
             data-testid={`ComicPanel-bubble-${no}-${i}`}

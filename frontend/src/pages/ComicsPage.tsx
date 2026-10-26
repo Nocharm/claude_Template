@@ -55,6 +55,9 @@ export function ComicsPage() {
           지금 한 편 그리기
         </button>
       </div>
+      <Link to="/characters" className="chip" data-testid="ComicsPage-charactersLink">
+        등장인물 관리 · 새 캐릭터 만들기
+      </Link>
       <p className="muted" style={{ margin: 0 }}>
         월·수·금 새벽 3시에 곧 복습할 표현으로 새 에피소드가 그려져요.
       </p>

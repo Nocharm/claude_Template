@@ -118,6 +118,24 @@ CREATE TABLE IF NOT EXISTS comic_panels (
     image_file TEXT,
     UNIQUE (comic_id, no)
 );
+CREATE TABLE IF NOT EXISTS characters (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    appearance TEXT NOT NULL,
+    status TEXT NOT NULL,
+    final_version INTEGER,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS character_versions (
+    id INTEGER PRIMARY KEY,
+    character_id INTEGER NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+    no INTEGER NOT NULL,
+    instruction TEXT NOT NULL,
+    appearance TEXT NOT NULL,
+    image_file TEXT NOT NULL,
+    UNIQUE (character_id, no)
+);
 """
 
 

@@ -120,3 +120,84 @@ def mark_interrupted_comics(conn: sqlite3.Connection) -> int:
     )
     conn.commit()
     return cursor.rowcount
+
+
+# --- Characters ---------------------------------------------------------------------
+
+
+def seed_characters(conn: sqlite3.Connection, defaults: list[tuple[str, str]]) -> None:
+    """Insert the default cast once, as active characters whose sheet is drawn on first use."""
+    if conn.execute("SELECT 1 FROM characters LIMIT 1").fetchone():
+        return
+    conn.executemany(
+        "INSERT INTO characters (name, appearance, status) VALUES (?, ?, 'active')", defaults
+    )
+    conn.commit()
+
+
+def create_character(conn: sqlite3.Connection, name: str, appearance: str) -> int:
+    cursor = conn.execute(
+        "INSERT INTO characters (name, appearance, status) VALUES (?, ?, 'draft')",
+        (name, appearance),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def get_character(conn: sqlite3.Connection, character_id: int) -> sqlite3.Row | None:
+    return conn.execute("SELECT * FROM characters WHERE id = ?", (character_id,)).fetchone()
+
+
+def list_characters(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    return conn.execute(
+        "SELECT c.*, (SELECT COUNT(*) FROM character_versions v WHERE v.character_id = c.id) "
+        "AS version_count FROM characters c ORDER BY c.id"
+    ).fetchall()
+
+
+def list_active_characters(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    return conn.execute("SELECT * FROM characters WHERE status = 'active' ORDER BY id").fetchall()
+
+
+def list_versions(conn: sqlite3.Connection, character_id: int) -> list[sqlite3.Row]:
+    return conn.execute(
+        "SELECT * FROM character_versions WHERE character_id = ? ORDER BY no", (character_id,)
+    ).fetchall()
+
+
+def get_version(conn: sqlite3.Connection, character_id: int, no: int) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM character_versions WHERE character_id = ? AND no = ?", (character_id, no)
+    ).fetchone()
+
+
+def add_version(
+    conn: sqlite3.Connection, character_id: int, instruction: str, appearance: str, image_file: str
+) -> int:
+    row = conn.execute(
+        "SELECT COALESCE(MAX(no), 0) + 1 FROM character_versions WHERE character_id = ?",
+        (character_id,),
+    ).fetchone()
+    no = row[0]
+    conn.execute(
+        "INSERT INTO character_versions (character_id, no, instruction, appearance, image_file) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (character_id, no, instruction, appearance, image_file),
+    )
+    conn.commit()
+    return no
+
+
+def finalize_character(
+    conn: sqlite3.Connection, character_id: int, no: int, appearance: str
+) -> None:
+    conn.execute(
+        "UPDATE characters SET status = 'active', final_version = ?, appearance = ? WHERE id = ?",
+        (no, appearance, character_id),
+    )
+    conn.commit()
+
+
+def set_character_status(conn: sqlite3.Connection, character_id: int, status: str) -> None:
+    conn.execute("UPDATE characters SET status = ? WHERE id = ?", (status, character_id))
+    conn.commit()

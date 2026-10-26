@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { TabBar } from "./components/TabBar";
+import { CharacterPage } from "./pages/CharacterPage";
+import { CharactersPage } from "./pages/CharactersPage";
 import { ComicPage } from "./pages/ComicPage";
 import { ComicsPage } from "./pages/ComicsPage";
 import { ExpressionPage } from "./pages/ExpressionPage";
@@ -22,6 +24,8 @@ export function App() {
         <Route path="/progress" element={<ProgressPage />} />
         <Route path="/comics" element={<ComicsPage />} />
         <Route path="/comics/:comicId" element={<ComicPage />} />
+        <Route path="/characters" element={<CharactersPage />} />
+        <Route path="/characters/:characterId" element={<CharacterPage />} />
       </Routes>
       <TabBar />
     </BrowserRouter>

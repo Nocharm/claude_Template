@@ -9,6 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import gemini
+from app.characters import CastMember
 from app.comics import ComicScript, get_latest_slot, get_next_slot
 from app.config import Settings
 from app.extraction import ExpressionBrief
@@ -22,8 +23,10 @@ class FakeWriter:
     def __init__(self) -> None:
         self.calls = 0
 
-    def write(self, expressions: list[ExpressionBrief]) -> ComicScript:
+    def write(self, expressions: list[ExpressionBrief], cast: list[CastMember]) -> ComicScript:
         self.calls += 1
+        self.cast_names = [m.name for m in cast]
+        keys = [m.key for m in cast]
         first = expressions[0].text
         return ComicScript.model_validate(
             {
@@ -31,10 +34,10 @@ class FakeWriter:
                 "panels": [
                     {
                         "scene_en": f"Scene {i}: Mina and Jun on scooters.",
-                        "characters": ["mina", "jun"] if i % 2 else ["mina"],
+                        "characters": keys[:2] if i % 2 else keys[:1],
                         "bubbles": [
                             {
-                                "speaker": "mina",
+                                "speaker": keys[0],
                                 "text_en": f"Line {i} with {first}.",
                                 "text_ko": f"대사 {i}",
                                 "highlight": first,

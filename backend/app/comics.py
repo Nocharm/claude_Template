@@ -9,9 +9,10 @@ from pathlib import Path
 from typing import Literal, Protocol
 
 import anthropic
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, create_model
 
 from app import comics_repository as store
+from app.characters import NO_TEXT, STYLE, CastMember, load_cast
 from app.extraction import ExpressionBrief, parse_structured
 from app.gemini import Painter, ReferenceImage
 
@@ -24,27 +25,11 @@ EXPRESSIONS_PER_COMIC = 6
 COMIC_WEEKDAYS = (0, 2, 4)
 COMIC_HOUR = 3
 
-Character = Literal["mina", "jun"]
-
-STYLE = (
-    "Korean webtoon style illustration, clean confident line art, soft cel shading, "
-    "bright natural colors, expressive faces, detailed but uncluttered backgrounds"
-)
-# Fixed looks; generated once as reference sheets so every panel keeps the same faces.
-CHARACTERS: dict[Character, str] = {
-    "mina": "Korean woman in her early 30s, shoulder-length dark brown bob with bangs, "
-    "warm brown eyes, mustard cardigan over a white T-shirt, light blue jeans",
-    "jun": "Korean man in his early 30s, short neat black hair, round thin-framed glasses, "
-    "friendly smile, forest green hoodie, khaki pants",
-}
-NO_TEXT = "Absolutely no text, letters, captions, signs with writing, or speech bubbles."
-
-
 # --- Script (Claude) -------------------------------------------------------------
 
 
 class Bubble(BaseModel):
-    speaker: Literal["mina", "jun", "narration"]
+    speaker: str = Field(description="A cast id from the list, or 'narration'.")
     text_en: str = Field(description="One short line, at most 15 words.")
     text_ko: str = Field(description="Natural Korean translation.")
     highlight: str = Field(
@@ -57,7 +42,7 @@ class PanelScript(BaseModel):
         description="Visual description for an illustrator: setting, action, facial expressions, "
         "camera angle. No dialogue or written words."
     )
-    characters: list[Character]
+    characters: list[str] = Field(description="Cast ids visible in the panel.")
     bubbles: list[Bubble] = Field(description="1–2 speech bubbles or narration boxes.")
 
 
@@ -71,7 +56,21 @@ class ComicError(Exception):
 
 
 class Writer(Protocol):
-    def write(self, expressions: list[ExpressionBrief]) -> ComicScript: ...
+    def write(self, expressions: list[ExpressionBrief], cast: list[CastMember]) -> ComicScript: ...
+
+
+def build_cast_script_model(keys: list[str]) -> type[ComicScript]:
+    """ComicScript variant whose speaker/character fields only accept this episode's cast ids."""
+    cast_key = Literal[tuple(keys)]  # type: ignore[valid-type]  # enum built at runtime
+    speaker_key = Literal[tuple([*keys, "narration"])]  # type: ignore[valid-type]
+    bubble = create_model("CastBubble", __base__=Bubble, speaker=(speaker_key, ...))
+    panel = create_model(
+        "CastPanel",
+        __base__=PanelScript,
+        characters=(list[cast_key], ...),
+        bubbles=(list[bubble], ...),
+    )
+    return create_model("CastComicScript", __base__=ComicScript, panels=(list[panel], ...))
 
 
 WRITER_SYSTEM = (
@@ -79,8 +78,10 @@ WRITER_SYSTEM = (
     "Dialogue is natural spoken English a native speaker would really say."
 )
 
-WRITER_PROMPT = """Write a {count}-panel webtoon episode starring Mina (the narrator) and her \
-husband Jun, a fun Korean couple in their 30s.
+WRITER_PROMPT = """Write a {count}-panel webtoon episode with this cast \
+(use the ids in speaker/characters fields):
+{cast}
+
 Use every target expression below naturally in the dialogue at least once, and set each \
 bubble's highlight to the exact words used. Give the story a small twist or punchline at the end.
 
@@ -93,45 +94,30 @@ class ClaudeWriter:
         self._client = client
         self._model = model
 
-    def write(self, expressions: list[ExpressionBrief]) -> ComicScript:
+    def write(self, expressions: list[ExpressionBrief], cast: list[CastMember]) -> ComicScript:
         lines = "\n".join(f"- {e.text} — {e.meaning_ko}" for e in expressions)
-        prompt = WRITER_PROMPT.format(count=PANEL_COUNT, lines=lines)
+        cast_lines = "\n".join(f"- {m.key}: {m.name} — {m.appearance}" for m in cast)
+        prompt = WRITER_PROMPT.format(count=PANEL_COUNT, cast=cast_lines, lines=lines)
         content = [{"type": "text", "text": prompt}]
-        return parse_structured(
-            self._client, self._model, WRITER_SYSTEM, content, ComicScript, "write comic"
+        model = build_cast_script_model([m.key for m in cast])
+        script = parse_structured(
+            self._client, self._model, WRITER_SYSTEM, content, model, "write comic"
         )
+        return ComicScript.model_validate(script.model_dump())
 
 
 # --- Drawing (Gemini) ------------------------------------------------------------
 
 
-def build_character_prompt(character: Character) -> str:
+def build_panel_prompt(panel: PanelScript, cast: dict[str, CastMember]) -> str:
+    members = [cast[k] for k in panel.characters if k in cast]
+    cast_text = "; ".join(f"{m.name} ({m.appearance})" for m in members) or "no main characters"
     return (
-        f"{STYLE}. Character reference sheet of a single character: {CHARACTERS[character]}. "
-        f"Front view, full body, neutral pose, plain white background. {NO_TEXT}"
-    )
-
-
-def build_panel_prompt(panel: PanelScript) -> str:
-    cast = ", ".join(c.capitalize() for c in panel.characters) or "no main characters"
-    return (
-        f"{STYLE}. One vertical webtoon panel in 4:5 portrait composition. Cast: {cast}. "
+        f"{STYLE}. One vertical webtoon panel in 4:5 portrait composition. Cast: {cast_text}. "
         f"{panel.scene_en} Characters must match the reference images exactly (same face, "
         f"hair and outfit). Keep the top quarter of the image as simple background so "
         f"speech bubbles can be placed there. {NO_TEXT}"
     )
-
-
-def ensure_character_refs(characters_dir: Path, painter: Painter) -> dict[Character, Path]:
-    characters_dir.mkdir(parents=True, exist_ok=True)
-    paths: dict[Character, Path] = {}
-    for character in CHARACTERS:
-        path = characters_dir / f"{character}.png"
-        if not path.exists():
-            path.write_bytes(painter.paint(build_character_prompt(character), []))
-            logger.info("character reference drawn", extra={"character": character})
-        paths[character] = path
-    return paths
 
 
 # --- Episode pipeline ----------------------------------------------------------------
@@ -160,25 +146,33 @@ def _run(
     conn: sqlite3.Connection, comic_id: int, comics_dir: Path, writer: Writer, painter: Painter
 ) -> None:
     store.update_comic(conn, comic_id, status="writing", error=None)
+    cast = load_cast(conn, painter, comics_dir / "characters")
+    if not cast:
+        raise ComicError("no active characters — finalize one in the character studio")
     if not store.list_panels(conn, comic_id):
         expressions = store.get_comic_expressions(conn, comic_id)
         if not expressions:
             raise ComicError("no expressions to use — study some cards first")
-        script = writer.write(expressions)
+        script = writer.write(expressions, cast)
         if len(script.panels) != PANEL_COUNT:
             raise ComicError(f"script has {len(script.panels)} panels, expected {PANEL_COUNT}")
         store.save_script(conn, comic_id, script)
 
     store.update_comic(conn, comic_id, status="drawing")
-    refs = ensure_character_refs(comics_dir / "characters", painter)
+    cast_by_key = {m.key: m for m in cast}
     episode_dir = comics_dir / str(comic_id)
     episode_dir.mkdir(parents=True, exist_ok=True)
     for row in store.list_panels(conn, comic_id):
         if row["image_file"]:
             continue
         panel = PanelScript.model_validate_json(row["script"])
-        references = [ReferenceImage("image/png", refs[c].read_bytes()) for c in panel.characters]
-        image = painter.paint(build_panel_prompt(panel), references)
+        # A character retired after the script was written is drawn from the text alone.
+        references = [
+            ReferenceImage("image/png", cast_by_key[k].image_path.read_bytes())
+            for k in panel.characters
+            if k in cast_by_key
+        ]
+        image = painter.paint(build_panel_prompt(panel, cast_by_key), references)
         file_name = f"{row['no']}.png"
         (episode_dir / file_name).write_bytes(image)
         store.set_panel_image(conn, row["id"], file_name)

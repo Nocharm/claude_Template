@@ -20,6 +20,8 @@ from pydantic import BaseModel
 
 from app import comics_repository as store_comics
 from app import db, pipeline, repository
+from app.characters import DEFAULT_CHARACTERS
+from app.characters_api import build_characters_router
 from app.coach import ClaudeCoach, Coach
 from app.comics import ClaudeWriter, Writer
 from app.comics_api import (
@@ -191,11 +193,12 @@ def create_app(
 
     # "Today" for streaks and due dates is the learner's local date, not the server's UTC date.
     get_today = clock or (lambda: get_now().date())
+    painter = painter_factory(settings)
     comic_service = ComicService(
         lambda: db.connect(settings.db_path),
         settings.comics_dir,
         lambda: writer_factory(settings),
-        painter_factory(settings),
+        painter,
         get_now,
         comic_runner,
     )
@@ -207,6 +210,7 @@ def create_app(
         with closing(db.connect(settings.db_path)) as conn:
             interrupted = repository.mark_interrupted_books(conn)
             interrupted += store_comics.mark_interrupted_comics(conn)
+            store_comics.seed_characters(conn, DEFAULT_CHARACTERS)
         if interrupted:
             logger.warning("marked interrupted jobs as failed", extra={"count": interrupted})
         scheduler = None
@@ -224,6 +228,9 @@ def create_app(
 
     app.include_router(build_study_router(get_conn, get_today, lambda: coach_factory(settings)))
     app.include_router(build_comics_router(get_conn, comic_service, settings.comics_dir, get_today))
+    app.include_router(
+        build_characters_router(get_conn, painter, settings.comics_dir / "characters")
+    )
 
     def run_ingest(book_id: int, book_dir: Path) -> None:
         extractor = extractor_factory(settings)

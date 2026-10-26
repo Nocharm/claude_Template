@@ -148,7 +148,7 @@ export interface ComicSummary {
 }
 
 export interface ComicBubble {
-  speaker: "mina" | "jun" | "narration";
+  speaker: string; // cast id like "c3", or "narration"
   text_en: string;
   text_ko: string;
   highlight: string;
@@ -157,6 +157,20 @@ export interface ComicBubble {
 export interface ComicDetail extends ComicSummary {
   expressions: { id: number; text: string; meaning_ko: string }[];
   panels: { no: number; image_url: string | null; bubbles: ComicBubble[] }[];
+}
+
+export interface CharacterSummary {
+  id: number;
+  name: string;
+  appearance: string;
+  status: "draft" | "active" | "resting";
+  final_version: number | null;
+  image_url: string | null;
+  version_count: number;
+}
+
+export interface CharacterDetail extends CharacterSummary {
+  versions: { no: number; instruction: string; image_url: string }[];
 }
 
 export class ApiError extends Error {
@@ -219,6 +233,19 @@ export const api = {
   createComic: () => request<ComicSummary>("/api/comics", { method: "POST" }),
   retryComic: (id: number) => request<ComicSummary>(`/api/comics/${id}/retry`, { method: "POST" }),
   getComic: (id: number) => request<ComicDetail>(`/api/comics/${id}`),
+  listCharacters: () => request<CharacterSummary[]>("/api/characters"),
+  getCharacter: (id: number) => request<CharacterDetail>(`/api/characters/${id}`),
+  createCharacter: (name: string, appearance: string) =>
+    request<CharacterDetail>("/api/characters", postJson({ name, appearance })),
+  reviseCharacter: (id: number, baseVersion: number, instruction: string) =>
+    request<CharacterDetail>(
+      `/api/characters/${id}/versions`,
+      postJson({ base_version: baseVersion, instruction }),
+    ),
+  finalizeCharacter: (id: number, version: number) =>
+    request<CharacterDetail>(`/api/characters/${id}/finalize`, postJson({ version })),
+  setCharacterStatus: (id: number, status: "active" | "resting") =>
+    request<CharacterDetail>(`/api/characters/${id}/status`, postJson({ status })),
   markComicRead: (id: number) =>
     request<{ xp_gained: number }>(`/api/comics/${id}/read`, { method: "POST" }),
 };

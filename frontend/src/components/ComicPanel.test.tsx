@@ -5,12 +5,12 @@ import { ComicPanel } from "./ComicPanel";
 
 const bubbles: ComicBubble[] = [
   {
-    speaker: "mina",
+    speaker: "c1",
     text_en: "Look, I spotted scooters!",
     text_ko: "봐, 스쿠터 발견!",
     highlight: "spotted",
   },
-  { speaker: "jun", text_en: "I'm down!", text_ko: "좋아!", highlight: "I'm down" },
+  { speaker: "c2", text_en: "I'm down!", text_ko: "좋아!", highlight: "I'm down" },
 ];
 
 describe("ComicPanel", () => {
@@ -41,6 +41,8 @@ describe("ComicPanel", () => {
 
     // Assert
     expect(onSpeak).toHaveBeenCalledWith("I'm down!");
+    expect(screen.getByTestId("ComicPanel-bubble-2-0")).toHaveClass("left");
+    expect(screen.getByTestId("ComicPanel-bubble-2-1")).toHaveClass("right");
     expect(screen.getByText("spotted")).toHaveClass("marker");
     expect(screen.getByText("좋아!")).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "/api/comics/1/panels/2");
